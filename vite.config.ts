@@ -4,16 +4,16 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '.', '');
+  const env = loadEnv(mode, process.cwd(), '');
   return {
-    base: '/Test2026/', // <--- THIS IS THE CRITICAL ADDITION
+    base: '/Test2026/',
     server: {
       port: 3000,
       host: '0.0.0.0',
     },
     plugins: [react(), tailwindcss()],
-define: {
-      'process.env.GEMINI_KEYS': JSON.stringify(env.VITE_GEMINI_KEYS || env.GEMINI_API_KEY)
+    define: {
+      'process.env.GEMINI_KEYS': JSON.stringify(env.VITE_GEMINI_KEYS || env.GEMINI_API_KEY || '')
     },
     resolve: {
       alias: {
