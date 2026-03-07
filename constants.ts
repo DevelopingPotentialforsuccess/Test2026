@@ -5,7 +5,7 @@ export const INITIAL_MODULES = ['Grammar', 'Reading', 'Vocabulary'];
 export const LANGUAGES = ['English', 'Khmer', 'Chinese', 'Korean', 'French'];
 
 export const ACADEMIC_LEVELS: AcademicLevel[] = [
-  'Kid' as any, 'Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 
+  'Kid' as any, 'Level 1', 'Level 1', 'Level 3', 'Level 4', 'Level 5', 
   'Level 6', 'Level 7', 'Level 8', 'Level 9', 'Level 10', 'Level 11', 'TOEFL' as any, 'IELTS' as any
 ];
 
@@ -23,85 +23,51 @@ export const THEMES: Theme[] = [
 ];
 
 export const GLOBAL_STRICT_COMMAND = `### NEURAL ARCHITECTURAL SPECIFICATION: ANTI-ROBOT PROTOCOL ###
-You are the "DPSS ULTIMATE TEST BUILDER" engine. Your objective is to destroy robotic patterns and enforce situational logic.
+You are the "DPSS ULTIMATE TEST BUILDER" engine. Your objective is to destroy robotic testing patterns and enforce human-level situational logic.
 
 1. [NO-FREE-VERB RULE]:
    - Never place the main modal/auxiliary in the stem if it reveals the answer.
    - Weak: "You must ____ a helmet." | Strong: "You ____ a helmet."
    - FOR FILL-IN-THE-BLANK: ALWAYS provide base verb in parentheses: "He ____ (go) to school."
 
-1.1. [SITUATIONAL EVIDENCE REQUIREMENT]:
-   - Grammar must be inferred from context, not time markers like yesterday/now.
+2. [MUST VS HAVE TO - ANGKOR WAT RULE]:
+   - INTERNAL OBLIGATION (Opinion/Personal Advice): Use "must". Example: "Angkor Wat is beautiful. You MUST visit it."
+   - EXTERNAL OBLIGATION (Official Rules/Policies/Laws): Use "have to/has to". Example: "School policy says every student HAS TO wear a tie."
+   - MANDATORY TRAP: Include "must to [verb]" as an incorrect option for all modal questions to test structural knowledge.
 
-2. [PURE VOCABULARY CONTROL]:
-   - All answer choices must be the same part of speech and grammatical form.
+3. [PRECISION SYNTAX & RARE RULES]:
+   - Test "as good a student as" (correct) vs "as a good student as" (incorrect).
+   - Test "the taller of the two" (comparative with 'the' for 2 people) vs "the tallest".
 
-3. [READING & VOCABULARY GRAMMAR BLACKOUT]:
-   - FORBIDDEN from testing grammar in Reading/Vocab sections. Distractors must be grammatically identical.
+4. [HUMAN-EXAM READING ARCHITECTURE]:
+   - WORD FORM SHIFT: Paraphrase all questions. Text: "building renovated" -> Question: "structure was improved."
+   - RED HERRINGS: Include details in the text that distract (multiple dates/times) to stop keyword matching.
+   - GLOBAL COMPREHENSION: Always include one "Main Purpose" or "Best Title" question.
 
-4. [HORIZONTAL MCQ COMPRESSION]:
+5. [HORIZONTAL MCQ COMPRESSION]:
    - Short options MUST be on ONE horizontal line: A. [text]          B. [text]          C. [text]          D. [text]
    - Use exactly 10 non-breaking spaces between options.
 
-5. [BLANK STYLE PROTOCOL]:
-   - Use the style "____" (Shift + Underscore). No brackets.
-
 6. [ANSWER KEY ENTROPY]:
-   - Assign keys BEFORE content. Max streak of 2 identical answers. Use all letters (A-D) in every 10 items.
+   - Assign keys BEFORE content. Max streak of 2 identical. Use all letters (A-D) in every 10 items.
 
-7. [BALANCED COLUMN DISTRIBUTION]:
-   - If using 2-column layout, distribute items evenly (5/5 split).
+7. [INDENTATION & FORMATTING]:
+   - Every numbered item MUST have exactly 6 non-breaking spaces (&nbsp;) before it.
+   - NO MARKDOWN: HTML tags ONLY (<b>, <table>). No asterisks. No <u> tags.
 
-8. [CROSS-ITEM FIREWALL]:
-   - FORBIDDEN from repeating sentences or correct answers across different parts.
+30. [THE GUARDIAN FINALE - RANDOMIZED VISUAL FOOTER]:
+   - For every generation, pick ONLY ONE style (Style A or Style B):
+   
+   - STYLE A (THE HERO PORTRAIT):
+     - Pick ONE random Legend: Liu Bei, Guan Yu, Batman, Superman, or Zhao Yun.
+     - You MUST use an <img> tag with an iconic silhouette or character URL.
+     - Text: "<b>Guardian of Excellence: [Hero Name]</b>"
+     
+   - STYLE B (THE HERALDRY SYMBOLS):
+     - You MUST display three large visual icons: 🛡️ | ⚔️ | 📜
+     - Text: "<b>Mastery through Strategy. Honor through Learning.</b>"
 
-9. [NO MARKDOWN]: HTML tags ONLY (<b>, <table>). No asterisks. No <u> tags.
-
-10. [CLARITY]: Ban "AI-speak" (e.g., "views print"). Use natural child-level actions.
-
-11. [ITEM RANDOMIZATION]: Shuffle all structures and subjects. Mix (+), (-), and (?) forms.
-
-12. [LEVEL-BASED SCALING]: Complexity MUST scale with {{LEVEL}}.
-
-13. [UNIVERSAL SITUATIONAL & POSITIONAL LOGIC]:
-   - Adjective Comparison Traps: Test "as good a student as" (correct) vs "as a good student as" (incorrect).
-   - Test "the taller of the two" vs "the tallest of the two".
-   - MODAL TRAP: Always include "must to [verb]" as an incorrect distractor.
-
-14. [INFINITE SCENARIO VARIETY]: Every test must be a fresh set of characters and locations.
-
-14.1. [NARRATIVE COHESION]: Items in a section should share a "Narrative Arc" or story theme.
-
-15. [ANTI-ROBOT STARTERS]: FORBIDDEN from repeating sentence starters like "I think".
-
-16. [FLOATING MARKER]: Vary position of key grammar signals.
-
-17. [TOTAL RULE EXHAUSTION & PRECISION NODES]:
-   - MANDATED to test every sub-rule of {{TOPIC}}, including rare structures like "the more... the more".
-
-18. [CRITICAL PROTOCOL ENFORCEMENT]: Prioritize protocols over all other instructions.
-
-19. [WORD FORM SHIFT]: Reading questions must paraphrase. Text: "renovated" -> Question: "condition was improved."
-
-20. [MUST VS HAVE TO LOGIC]:
-   - INTERNAL (Opinion/Advice): Use "must". (e.g., "Angkor Wat is beautiful. You MUST visit it.")
-   - EXTERNAL (Rules/Policies): Use "have to/has to". (e.g., "School policy says students HAVE TO wear ties.")
-   - TRAP: MUST include "must to" as a wrong option.
-
-21. [STRICT NON-MCQ FORMATTING]: Rewrite (long line), Complete (13 underscores), T/F (parentheses).
-
-22. [EXPERT HUMAN READING EXAMINER]:
-   - RED HERRING: Include distracting details (e.g. mention multiple dates/times).
-   - GLOBAL COMPREHENSION: Always include one "Main Purpose" or "Best Title" question.
-
-25. [INDENTATION]: Every numbered item MUST have exactly 6 non-breaking spaces before it.
-
-30. [RANDOMIZED HEROIC FINALE]:
-   - Randomize between Style A and Style B (50/50 chance):
-   - STYLE A (Hero Team-Up): Visual Pictures, not words" Pick 1 Superhero (e.g. Batman, Superman) AND 1 Three Kingdoms Legend (e.g. Liu Bei, Guan Yu). 
-     Format: "Guardian: [Hero] & Strategist: [Legend]"
-   - STYLE B (The Symbols): Use Icons: 🛡️ | ⚔️ | 📜
-   - MANDATORY: Powerful hero quote + "Pre5-Chanthy-S2-20Copies-({{TOPIC}})" in bold. Wrap in double-border HTML box.`;
+   - FOOTER MANDATE: Wrap in a centered HTML box with double borders. Include a random heroic quote and "<b>Pre5-Chanthy-S2-20Copies-({{TOPIC}})</b>" in bold at the bottom.`;
 
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
 Wrap content in a double border: border: 4px double #ea580c; padding: 25px; border-radius: 12px;`;
@@ -114,26 +80,63 @@ export const DEFAULT_STRICT_RULES: StrictRule[] = [
 ];
 
 export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
-  { id: 'mp-1', label: 'NO-FREE-VERB RULE', description: 'Prevents giving away verb.', promptInjection: 'Never place main auxiliary directly in stem.', active: true, priority: 'High', category: 'Grammar' },
-  { id: 'mp-2', label: 'SITUATIONAL EVIDENCE', description: 'Inference from context.', promptInjection: 'Grammar must be inferred from situational evidence.', active: true, priority: 'High', category: 'Grammar' },
-  { id: 'mp-3', label: 'HIGH-FIDELITY POOLING', description: 'Near-miss distractors.', promptInjection: 'Generate at least one Near-Miss distractor.', active: true, priority: 'Medium', category: 'General' },
-  { id: 'mp-advanced-comparison', label: 'ADVANCED COMPARISON', description: 'Tests "as good a student as".', promptInjection: 'STRICT: Test rare structures. distractor MUST include "as a good student as" (incorrect).', active: true, priority: 'High', category: 'Grammar' },
-  { id: 'mp-reference-logic', label: 'PRONOUN REFERENCE TESTING', description: 'Tests "What does IT refer to?".', promptInjection: 'Include one "Reference Resolution" question per passage.', active: true, priority: 'High', category: 'Reading' },
-  { id: 'mp-human-test', label: 'HUMAN-TEST ARCHITECTURE', description: 'Exforces expert design.', promptInjection: 'STRICT: 1. Simple vocab. 2. High thinking depth. 3. Global Comprehension questions.', active: true, priority: 'High', category: 'Reading' },
-  { id: 'mp-pragmatic-boundary', label: 'STRICT OBLIGATION (ANGKOR WAT)', description: 'Must (Opinion) vs Have to (Rule).', promptInjection: 'STRICT RULE: Personal opinion = MUST (Angkor Wat). Official rules = HAVE TO (Policy). Trap: "must to".', active: true, priority: 'High', category: 'Grammar' },
+  { id: 'mp-1', label: 'NO-FREE-VERB RULE', description: 'Prevents giving away the verb.', promptInjection: 'Never place the main auxiliary directly in the question stem.', active: true, priority: 'High', category: 'Grammar' },
+  { id: 'mp-pragmatic-boundary', label: 'STRICT OBLIGATION (ANGKOR WAT)', description: 'Must (Opinion) vs Have to (Rule).', promptInjection: 'STRICT: Opinion = Must (Angkor Wat). Rules = Have to (School Policy). Trap: "must to".', active: true, priority: 'High', category: 'Grammar' },
+  { id: 'mp-advanced-comparison', label: 'ADVANCED COMPARISON', description: 'Tests rare structures like "as good a student as".', promptInjection: 'STRICT: Test "as good a student as" and "the taller of the two".', active: true, priority: 'High', category: 'Grammar' },
+  { id: 'mp-human-test', label: 'HUMAN-TEST ARCHITECTURE', description: 'Enforces expert design.', promptInjection: 'STRICT: 1. Simple vocab. 2. Thinking depth. 3. Global Comprehension. 4. Red Herrings.', active: true, priority: 'High', category: 'Reading' },
   { id: 'mp-interference-trap', label: 'L1 INTERFERENCE TRAP', description: 'Common learner mistakes.', promptInjection: 'STRICT: Use common mistakes like "I am boring" as distractors.', active: true, priority: 'High', category: 'Grammar' },
-  { id: 'mp-answer-key', label: 'CHAOTIC ANSWER KEYS', description: 'Bucket randomization.', promptInjection: 'ANSWER-FIRST RULE: Assign keys BEFORE content.', active: true, priority: 'High', category: 'General' },
-  { id: 'mp-mcq-layout', label: 'MCQ LAYOUT PROTOCOL', description: 'Horizontal formatting.', promptInjection: 'MCQ FORMATTING: Short options MUST be on ONE horizontal line with 10 spaces.', active: true, priority: 'Medium', category: 'General' }
+  { id: 'mp-reference-logic', label: 'PRONOUN REFERENCE TESTING', description: 'Tests pronoun tracking.', promptInjection: 'Include "Reference Resolution" questions (e.g., "What does IT refer to?").', active: true, priority: 'High', category: 'Reading' }
 ];
 
 export const INITIAL_TEMPLATES: InstructionTemplate[] = [
-  { id: 'g_full_mastery', category: 'GRAMMAR', label: 'FULL GRAMMAR TEST', prompt: 'PART: FULL GRAMMAR TEST. 1. C/I, 2. MCQ, 3. Circle, 4. Double-Gap. ITEM COUNT: {{COUNT}} each.', columnCount: 0 },
-  { id: 'r_full_mastery', category: 'READING', label: 'FULL READING TEST', prompt: 'PART: FULL READING TEST. Generate 6-part test. Apply Human-Test Architecture. Apply Global Comprehension.', columnCount: 0 },
-  { id: 'v_full_mastery', category: 'VOCABULARY', label: 'FULL VOCABULARY TEST', prompt: 'PART: FULL VOCABULARY TEST. 1. Matching, 2. T/F, 3. MCQ, 4. Speaking Practice. {{COUNT}} items each.', columnCount: 0 },
-  { id: 'g_mcq', category: 'GRAMMAR', label: 'MCQ', prompt: 'Part: Precision MCQ for {{TOPIC}}. Apply MUST vs HAVE TO logic. Include "must to" trap.', columnCount: 0 },
-  { id: 'g_correct_incorrect', category: 'GRAMMAR', label: 'WRITE C (CORRECT) OR I (INCORRECT).', prompt: 'Part: Correct or Incorrect assessment for {{TOPIC}}. Use style "1. _____" (5 underscores).', columnCount: 0 },
-  { id: 'g_teacher_mode', category: 'GRAMMAR', label: 'TEACHER MODE: ERROR CORRECTION', prompt: 'Generate paragraph with 5 deliberate errors for {{TOPIC}}. Student must rewrite correctly.', columnCount: 0 },
-  { id: 'r_short_answer', category: 'READING', label: 'SHORT ANSWER (2 WORDS)', prompt: 'Generate text about {{TOPIC}}. Follow with short-answer questions (Max 2 words).', columnCount: 0 },
-  { id: 'v_matching', category: 'VOCABULARY', label: 'DEFINITION MATCHING', prompt: 'MATCHING. Match words for {{TOPIC}} with definitions.', columnCount: 0 },
-  { id: 'v_study_table', category: 'VOCABULARY', label: 'VOCABULARY STUDY', prompt: 'VOCABULARY TABLE. Column 1: Number+Word. Column 2: Easy Definition.', columnCount: 2 }
+  // --- FULL TEST COMBINATIONS ---
+  { id: 'g_full_mastery', category: 'GRAMMAR', label: 'FULL GRAMMAR TEST', prompt: 'PART: FULL GRAMMAR TEST. Generate 4 parts: 1. C/I, 2. MCQ, 3. Circle, 4. Double-Gap. ITEM COUNT: {{COUNT}} each.', columnCount: 0 },
+  { id: 'v_full_mastery', category: 'VOCABULARY', label: 'FULL VOCABULARY TEST', prompt: 'PART: FULL VOCABULARY TEST. PARTS: 1. MATCHING, 2. T/F, 3. MCQ, 4. SPEAKING. Apply Grammar Blackout.', columnCount: 0 },
+  { id: 'r_full_mastery', category: 'READING', label: 'FULL READING TEST', prompt: 'PART: FULL READING TEST. Generate 6 parts. Apply Human-Test Architecture Logic.', columnCount: 0 },
+
+  // --- GRAMMAR MODULE ---
+  { id: 'g_complete_sentences', category: 'GRAMMAR', label: 'COMPLETE THE FOLLOWING SENTENCES.', prompt: 'Part: Write correct verb form for {{TOPIC}}. Use style _____________ (13 underscores) and base verb in ().', columnCount: 0 },
+  { id: 'g_complete_task', category: 'GRAMMAR', label: 'COMPLETE THE FOLLOWING SENTENCES (WRITING).', prompt: 'Part: Writing task about {{TOPIC}}. Use style _____________ (13 underscores). No MCQ.', columnCount: 0 },
+  { id: 'g_correct_incorrect', category: 'GRAMMAR', label: 'WRITE C (CORRECT) OR I (INCORRECT).', prompt: 'Part: Correct/Incorrect for {{TOPIC}}. Write C or I. Use style "1. _____" (5 underscores).', columnCount: 0 },
+  { id: 'g_rewrite_sentences', category: 'GRAMMAR', label: 'REWRITE THE FOLLOWING SENTENCES.', prompt: 'Part: Rewrite sentences about {{TOPIC}}. Provide long blank line (____________________________________).', columnCount: 0 },
+  { id: 'g_mcq', category: 'GRAMMAR', label: 'MCQ', prompt: 'Part: MCQ for {{TOPIC}}. Apply MUST vs HAVE TO and PRECISION logic. Include "must to" traps.', columnCount: 0 },
+  { id: 'g_spelling', category: 'GRAMMAR', label: 'SPELLING RULES', prompt: 'Part: Spelling rules table for {{TOPIC}}. Use singular/plural/comparative columns.', columnCount: 0 },
+  { id: 'g_circle', category: 'GRAMMAR', label: 'CIRCLE THE CORRECT OPTION.', prompt: 'Part: Circle the correct choice in parentheses for {{TOPIC}}.', columnCount: 0 },
+  { id: 'g_box', category: 'GRAMMAR', label: 'WORDS IN THE BOX.', prompt: 'Part: Complete sentences using a word box for {{TOPIC}}.', columnCount: 0 },
+  { id: 'g_pair', category: 'GRAMMAR', label: 'PAIR OF WORDS TO COMPLETE THE SENTENCE.', prompt: 'Part: Double-gap MCQ for {{TOPIC}}.', columnCount: 0 },
+  { id: 'g_copy', category: 'GRAMMAR', label: 'COPY FROM THE BOOK.', prompt: 'Part: Copy exercises for {{TOPIC}} and randomize numbering.', columnCount: 0 },
+  { id: 'g_odd_one_out', category: 'GRAMMAR', label: 'ODD ONE OUT', prompt: '3 answer choices: Choose the incorrect sentence.', columnCount: 0 },
+  { id: 'g_editing', category: 'GRAMMAR', label: 'EDITING A PARAGRAPH (ERROR HUNT)', prompt: 'Editing: Correct all grammar mistakes in the paragraph.', columnCount: 0 },
+  { id: 'g_reduce', category: 'GRAMMAR', label: 'REDUCE THE SENTENCE', prompt: 'Rewrite using fewer words.', columnCount: 0 },
+  { id: 'g_best_rewrite', category: 'GRAMMAR', label: 'CHOOSE THE BEST REWRITE', prompt: 'Choose the most accurate rewrite of the sentence.', columnCount: 0 },
+  { id: 'g_cloze_paragraph', category: 'GRAMMAR', label: 'CLOZE PASSAGE (FULL PARAGRAPH)', prompt: 'Cloze Passage: Fill in the blanks in a full paragraph.', columnCount: 0 },
+  { id: 'g_teacher_mode', category: 'GRAMMAR', label: 'TEACHER MODE: ERROR CORRECTION', prompt: 'Generate paragraph with 5 deliberate errors. Student must rewrite correctly.', columnCount: 0 },
+
+  // --- READING MODULE ---
+  { id: 'r_mcq_rule7', category: 'READING', label: 'READING MCQ (RULE 7)', prompt: 'Reading passage. Apply Human-Test Logic: No keyword overlap.', columnCount: 0 },
+  { id: 'r_tfng', category: 'READING', label: 'A: READING TRUE/FALSE/NOT GIVEN', prompt: 'Short notice text. T/F/NG questions. Use style "1. (_____)"', columnCount: 0 },
+  { id: 'r_tf_stmt', category: 'READING', label: 'B: TRUE/ FALSE STATEMENT', prompt: 'Personal blog post. T/F statements with synonyms.', columnCount: 0 },
+  { id: 'r_matching_heading', category: 'READING', label: 'C: MATCHING HEADING', prompt: '4-paragraph informational text. Matching headings task.', columnCount: 0 },
+  { id: 'r_short_answer', category: 'READING', label: 'D: WRITE NO MORE THAN TWO WORDS', prompt: 'Process text. Fill-in-the-blank summary requiring exact words.', columnCount: 0 },
+  { id: 'r_inferential', category: 'READING', label: 'E: INFERENTIAL COMPREHENSION', prompt: 'Opinion piece. Questions testing author attitude.', columnCount: 0 },
+  { id: 'r_mcq_reading', category: 'READING', label: 'F: MCQ', prompt: 'Long complex narrative. MCQ testing inference.', columnCount: 0 },
+  { id: 'r_ket', category: 'READING', label: 'G: KET FULL TEST', prompt: 'Full Cambridge KET style Reading test.', columnCount: 0 },
+  { id: 'r_matching_info', category: 'READING', label: 'MATCHING INFORMATION', prompt: 'Which paragraph contains specific information.', columnCount: 0 },
+  { id: 'r_inference_qs', category: 'READING', label: 'INFERENCE QUESTIONS', prompt: 'Inference questions testing intent.', columnCount: 0 },
+  { id: 'r_critical_thinking', category: 'READING', label: 'CRITICAL THINKING', prompt: 'Short logic-based reading items.', columnCount: 0 },
+
+  // --- VOCABULARY MODULE ---
+  { id: 'v_study_table', category: 'VOCABULARY', label: 'VOCABULARY STUDY', prompt: 'Study Table. Col 1: Word. Col 2: Easy Definition.', columnCount: 2 },
+  { id: 'v_sentence_study', category: 'VOCABULARY', label: 'SENTENCE STUDY', prompt: 'Study vocab through context sentences.', columnCount: 0 },
+  { id: 'v_supply_terms', category: 'VOCABULARY', label: 'SUPPLY KEY TERMS', prompt: 'Definition in Col 1, Blank for term in Col 2.', columnCount: 2 },
+  { id: 'v_box', category: 'VOCABULARY', label: 'VOCABULARY BOX', prompt: 'Fill-in-the-blank using a box of words.', columnCount: 0 },
+  { id: 'v_matching', category: 'VOCABULARY', label: 'DEFINITION MATCHING', prompt: 'Match vocab with correct definitions.', columnCount: 0 },
+  { id: 'v_copy', category: 'VOCABULARY', label: 'COPY EXERCISES', prompt: 'Copy the following sentences into your notebook.', columnCount: 0 },
+  { id: 'v_synonym_swap', category: 'VOCABULARY', label: 'REWRITE WITH A SYNONYM', prompt: 'Rewrite sentences using a synonym for the underlined word.', columnCount: 0 },
+  { id: 'v_mcq', category: 'VOCABULARY', label: 'PART C6: MCQ', prompt: 'MCQ for vocab. Apply Grammar Blackout.', columnCount: 0 },
+  { id: 'v_tf', category: 'VOCABULARY', label: 'TRUE/FALSE', prompt: 'True/False testing word meaning.', columnCount: 0 },
+  { id: 'v_speaking', category: 'VOCABULARY', label: 'SPEAKING (DISCUSS)', prompt: 'Open-ended discussion questions for vocab.', columnCount: 0 },
+  { id: 'v_synonyms_table', category: 'VOCABULARY', label: 'SYNONYMS', prompt: '5-column table for vocab and synonyms.', columnCount: 5 },
+  { id: 'v_circle', category: 'VOCABULARY', label: 'CIRCLE THE CORRECT WORD', prompt: 'Circle the correct word choice.', columnCount: 0 },
+  { id: 'v_cloze', category: 'VOCABULARY', label: 'CLOZE PASSAGE', prompt: 'Cloze passage for vocabulary.', columnCount: 0 }
 ];
