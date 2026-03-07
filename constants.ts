@@ -480,25 +480,15 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
       category: 'Grammar'
     },
   {
-    id: 'mp-colored-headers',
+    id: 'mp-banner-styling',
     label: 'PREMIUM BANNER HEADERS',
-    description: 'Adds professional dark background boxes to section titles.',
-    promptInjection: 'STRICT VISUAL STYLE: Wrap every Section Header (PART A, PART B) in an HTML div with dark background (#1e293b), white text, padding:12px, border-radius:8px, text-align:center, and bold font.',
+    description: 'Enforces 80% Color Banners / 20% Black & White Headers.',
+    promptInjection: 'STRICT VISUAL STYLE: Follow 80/20 rule. 80% chance: Use colorful banners (#2c3e50, #15803d, #1e3a8a) with white bold text for Part Headers. 20% chance: Use no background (simple black bold text). Always wrap content in a border box.',
     active: true,
     priority: 'High',
     category: 'General'
   }
-    {
-      id: 'mp-banner-styling',
-      label: 'PREMIUM BANNER HEADERS',
-      description: 'Enforces 80% Color Banners / 20% Black & White Headers.',
-      promptInjection: 'STRICT VISUAL STYLE: 80% chance: Use colorful banners (#2c3e50, #15803d, #1e3a8a) with white bold text for Part Headers. 20% chance: Use no background (simple black text).',
-      active: true,
-      priority: 'High',
-      category: 'General'
-    }
-export const INITIAL_TEMPLATES: InstructionTemplate[] = [
-  ];
+];
   // --- FULL TEST COMBINATIONS ---
   { id: 'g_full_mastery', category: 'GRAMMAR', label: 'FULL GRAMMAR TEST', prompt: 'PART: FULL GRAMMAR TEST. Generate a 4-part test. ITEM COUNT: Generate exactly {{COUNT}} items for EACH part. NUMBERING: Number every single item in each part starting from 1. PARTS: 1. Write C (correct) or I (incorrect), 2. MCQ, 3. Circle the correct answers, 4. Double-Gap MCQ. Apply NO-FREE-VERB mandate.', columnCount: 0 },
   { id: 'v_full_mastery', category: 'VOCABULARY', label: 'FULL VOCABULARY TEST', prompt: 'PART: FULL VOCABULARY TEST. Generate a 4-part test. ITEM COUNT: Generate exactly {{COUNT}} items for EACH part. NUMBERING: Number every single item in each part starting from 1. PARTS: 1. MATCHING, 2. TRUE/FALSE (Definition-based), 3. MCQ, 4. SPEAKING Practice. Apply Pure Vocabulary Firewall. STRICT: NO Reading passages.', columnCount: 0 },
