@@ -8,7 +8,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    base: '/Test2026/',
+    // IMPORTANT: Changed to '/' because of your custom domain
+    base: '/',
     server: {
       port: 3000,
       host: '0.0.0.0',
