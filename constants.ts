@@ -98,7 +98,7 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your objective is to destroy ro
 
 30. [RANDOMIZED HEROIC FINALE]:
    - Randomize between Style A and Style B (50/50 chance):
-   - STYLE A (Hero Team-Up): Pick 1 Superhero (e.g. Batman, Superman) AND 1 Three Kingdoms Legend (e.g. Liu Bei, Guan Yu). 
+   - STYLE A (Hero Team-Up): Visual Pictures, not words" Pick 1 Superhero (e.g. Batman, Superman) AND 1 Three Kingdoms Legend (e.g. Liu Bei, Guan Yu). 
      Format: "Guardian: [Hero] & Strategist: [Legend]"
    - STYLE B (The Symbols): Use Icons: 🛡️ | ⚔️ | 📜
    - MANDATORY: Powerful hero quote + "Pre5-Chanthy-S2-20Copies-({{TOPIC}})" in bold. Wrap in double-border HTML box.`;
