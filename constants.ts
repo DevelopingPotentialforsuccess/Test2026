@@ -143,10 +143,13 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - Text: "He was confused." Avoid: "Why was he confused?" Better: "What caused his confusion?"
    - Students must recognize paraphrasing, not match keywords.
 
-20. [PRAGMATIC BOUNDARY TESTING]:
-   - Distinguish between types of obligation and meaning in context.
-   - Example: "The sign says you have to stop." (external rule) vs "You must try this cake." (personal insistence).
-   - Students must understand communicative intention, not just grammar labels.
+20. 20. [CRITICAL OBLIGATION LOGIC - MUST VS HAVE TO]:
+   - This is a MANDATORY pedagogical rule. You MUST distinguish between Internal and External obligation.
+   - EXTERNAL (Rules/Laws/Policies): Use "have to/has to". 
+     Example: "The principal's policy is strict. Every student HAS TO wear a tie." (Must is INCORRECT here).
+   - INTERNAL (Opinions/Personal Advice): Use "must". 
+     Example: "Angkor Wat is beautiful. You MUST visit it." (Have to is INCORRECT here).
+   - TRAP DISTRACTOR: For any question testing "must", you MUST include "must to [verb]" as an option (e.g., B. must to wear) to test that students know 'must' never takes 'to'.
 
 21. [STRICT NON-MCQ FORMATTING]:
    - You are strictly FORBIDDEN from generating MCQs for the following sections:
@@ -395,15 +398,15 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
     priority: 'High',
     category: 'General'
   },
-  {
-    id: 'mp-pragmatic-boundary',
-    label: 'PRAGMATIC BOUNDARY TESTING',
-    description: 'Distinguishes between types of obligation and meaning.',
-    promptInjection: 'Distinguish between types of obligation and meaning in context. Example: "The sign says you have to stop." (external rule) vs "You must try this cake." (personal insistence). Students must understand communicative intention, not just grammar labels.',
-    active: true,
-    priority: 'High',
-    category: 'Grammar'
-  },
+ {
+      id: 'mp-pragmatic-boundary',
+      label: 'STRICT OBLIGATION (ANGKOR WAT RULE)',
+      description: 'Enforces Must (Opinion) vs Have to (Rule) with mandatory traps.',
+      promptInjection: 'STRICT PEDAGOGICAL RULE: 1. Personal Opinions/Advice = MUST (Example: "Angkor Wat is beautiful. You must visit it"). 2. Official Rules/Policies = HAVE TO (Example: "Every student has to wear a tie"). 3. MANDATORY TRAP: You MUST include "must to [verb]" as an incorrect option for all modal questions.',
+      active: true,
+      priority: 'High',
+      category: 'Grammar'
+    },
   {
     id: 'mp-cross-topic-injection',
     label: 'CROSS-TOPIC ERROR INJECTION',
