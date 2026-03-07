@@ -4,7 +4,9 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
+  // This loads the environment variables from GitHub Secrets
   const env = loadEnv(mode, process.cwd(), '');
+
   return {
     base: '/Test2026/',
     server: {
@@ -13,6 +15,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [react(), tailwindcss()],
     define: {
+      // This sends the list of 12 keys into your website code safely
       'process.env.GEMINI_KEYS': JSON.stringify(env.VITE_GEMINI_KEYS || env.GEMINI_API_KEY || '')
     },
     resolve: {
