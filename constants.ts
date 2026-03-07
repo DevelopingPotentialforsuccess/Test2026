@@ -98,6 +98,8 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
        - "as good a student as" (Singular) vs "as good students as" (Plural).
        - "Of the two" Rule: "Of the two students, he is the taller" (NOT tallest).
        - "Of all" Rule: "Of all the teachers, she is the most hardworking" (Superlative).
+       Test "as [adj] a [noun] as" vs "as a [adj] [noun] as" (the latter is incorrect).
+Test "the [comparative] of the two" (e.g., "the taller of the two") to ensure students don't use the superlative for only two people.
        - Comparative vs Superlative Traps: "He is more tall than..." (WRONG) vs "He is taller than..." (RIGHT).
        - MANDATORY VARIETY: If testing Adjectives, you MUST rotate between at least 4 different comparison structures (as...as, comparative -er, superlative -est, of the two).
      - Adverb Placement: Test frequency adverbs (e.g., "He always is" vs "He is always") and manner adverbs.
@@ -110,6 +112,10 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - You are strictly FORBIDDEN from repeating scenarios or sentence structures across different generations.
    - Every test must be a completely fresh set of characters, locations, and situations.
    - Randomize numbers, names, and subjects completely. No "robot patterns".
+14.1. [NARRATIVE COHESION PROTOCOL]:
+   - Instead of isolated sentences, try to make all items in a single section share a "Narrative Arc" (a common theme or story). 
+   - Example: If the topic is "Tenses," the items could follow a character's day (Item 1: Waking up, Item 2: Breakfast, Item 3: School). 
+   - This forces students to track the "Timeline" of the story to choose the correct tense, not just look at one sentence.
 15. [ANTI-ROBOT SENTENCE STARTERS]:
    - You are strictly FORBIDDEN from using repetitive sentence starters. 
    - DO NOT start Item 1 with "I think" or "He is" in every generation.
@@ -128,11 +134,14 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - Actively test less common but correct structures such as: "as good a student as", "of the two", "the more…, the more…", "not so much A as B".
    - These structures measure real grammatical depth.
 
-17. [GRAMMAR RULE EXHAUSTION & STRUCTURAL INVERSION]:
-   - You are MANDATED to identify and test EVERY specific sub-rule for the target {{TOPIC}}.
-   - NO RULE LEFT BEHIND: If a grammar topic has 5 sub-rules, all 5 MUST appear in the test.
-   - Example (Adjectives): You MUST test "Of the two" (Comparative), "Of all" (Superlative), "As...as" (Equality), and "More...than" traps.
-   - Every generation must feel unique and non-repetitive.
+17. [TOTAL RULE EXHAUSTION & PRECISION NODES]:
+   - You are MANDATED to test every sub-rule of the target {{TOPIC}}, especially "Rare Structures".
+   - If testing Adjective Comparison, you MUST include:
+     1. The "As [Adj] a [Noun] as" structure (e.g., "as good a student as").
+     2. The "Of the two" rule (e.g., "Of the two students, she is the taller").
+     3. The "The more... the more..." correlative.
+   - For Tenses: Test stative verbs in continuous forms (traps) and "future in the past".
+   - STRUCTURE MAPPING: Before writing, identify the 10 most difficult sub-rules for the topic and ensure at least 5 of them appear in the test.
 
 18. [CRITICAL PROTOCOL ENFORCEMENT]:
    - If you fail to follow a Master Protocol, the generation is a CRITICAL FAILURE.
@@ -142,6 +151,7 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - Reading questions must not repeat the exact wording from the text.
    - Text: "He was confused." Avoid: "Why was he confused?" Better: "What caused his confusion?"
    - Students must recognize paraphrasing, not match keywords.
+   Example: If the text says "The building was renovated," the question should say "Work was done to improve the condition of the structure." (High-level paraphrase).
 
 20. 20. [CRITICAL OBLIGATION LOGIC - MUST VS HAVE TO]:
    - This is a MANDATORY pedagogical rule. You MUST distinguish between Internal and External obligation.
@@ -163,15 +173,10 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
      - SUPPLY KEY TERMS: Use a 2-column HTML table (1. Easy Definition | Blank for Key Term).
      - STUDY SENTENCES: Use standard sentences, NOT MCQs.
 
-22. [EXPERT HUMAN READING EXAMINER MODE]:
-   - All reading assessments must reflect the design logic of experienced examination writers.
-   - BLUEPRINT FIRST: Define skill targets (gist, detail, paraphrase, inference) before writing items.
-   - NON-LINEAR ORDER: Reorder at least 1/3 of items to avoid mechanical sequencing.
-   - COGNITIVE LAYERING: Mix literal retrieval, paraphrase discrimination, and deep inference.
-   - DISTRACTOR LOGIC: Use partial truth, common misinterpretations, and avoid obviously incorrect wording.
-   - VARIED FRAMES: Use indirect questions, negative framing ("Which is NOT..."), and embedded clauses.
-   - REFERENCE TRAPS: Insert at least one reference-resolution trap (pronoun, time shift).
-   - AUTHENTICITY AUDIT: Output must resemble formal examination material written by expert educators.
+22. [EXPERT HUMAN READING EXAMINER MODE]: All reading assessments must reflect professional design. 1. RED HERRING PROTOCOL: Every passage MUST include details that act as distractors (e.g., if the answer is Sunday, mention Saturday and Monday as well). 2. COGNITIVE LAYERING: Mix literal retrieval with deep inference. 3. GLOBAL COMPREHENSION: Always include one question about the overall theme or purpose of the text.
+22.1. [RED HERRING PROTOCOL]: 
+   - Every reading passage MUST include "Red Herrings" (Distractors within the text). 
+   - Example: If the correct answer is 'Sunday', the text should mention 'Saturday' and 'Monday' to see if the student is actually reading for detail or just scanning for days of the week.
 
 23. [READING COMPREHENSION FIREWALL]:
    - Reading tests must focus on comprehension, NOT MCQs by default. Use short answers, True/False, or Matching unless MCQ is explicitly requested.
@@ -191,7 +196,7 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
 30. [GUARDIAN FOOTER PROTOCOL]:
    - You MUST append a centered footer at the very end of the document.
    - The footer must contain:
-     1. A row of 3 large emojis (40pt).
+     1. Randomize Super Hero in China and Around the worlds hero  (45pt).
      2. A randomized, inspiring personal development quote in italics.
      3. The specific text: "Pre5-Chanthy-S2-20Copies-(Grammar)" in bold.
    - Use HTML for styling: <div style="text-align: center; margin-top: 50px;">...</div>`;
@@ -251,6 +256,15 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
   { id: 'mp-7', label: 'SYNTACTIC DISTANCE STRATEGY', description: 'Separates subject and verb to test structural awareness.', promptInjection: 'At advanced levels, separate the subject from the main verb using relative clauses or prepositional phrases. Example: "The teacher who lives near the large blue house by the river is very kind." Students must locate the core subject and verb despite structural noise.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-advanced-comparison', label: 'ADVANCED COMPARISON STRUCTURES', description: 'Tests complex comparison forms.', promptInjection: 'Actively test less common but correct structures such as: "as good a student as", "of the two", "the more…, the more…", "not so much A as B". These structures measure real grammatical depth.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-8', label: 'ABSTRACT SUBJECTS & INVERSION (LEVEL 8+)', description: '', promptInjection: 'For Level 8+, use abstract subjects (gerunds, clauses), inverted structures, or tricky conjunctions (neither/nor, as well as).', active: true, priority: 'High', category: 'Grammar' },
+  {
+      id: 'mp-reference-logic',
+      label: 'PRONOUN REFERENCE TESTING',
+      description: 'Forces questions about pronoun reference (e.g., "What does IT refer to?").',
+      promptInjection: 'STRICT: Include at least one "Reference Resolution" question for every reading passage. Example: "In paragraph 2, the word [THEM] refers to...". This tests the student ability to track subjects across sentences.',
+      active: true,
+      priority: 'High',
+      category: 'Reading'
+    },
   { 
     id: 'mp-9', 
     label: 'WORD FORM SHIFT RULE', 
@@ -271,13 +285,15 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
   },
   { id: 'mp-11', label: 'EASY IDIOMS & PHRASAL VERBS', description: '', promptInjection: 'Replace standard verbs in the text with common phrasal verbs or easy idioms in the questions (e.g., "quit" -> "gave up").', active: true, priority: 'Medium', category: 'Reading' },
   { 
+{ 
     id: 'mp-human-test', 
     label: 'HUMAN-TEST ARCHITECTURE', 
     description: 'Enforces exam-writer logic: simple vocab, high thinking.', 
-    promptInjection: 'STRICT HUMAN-TEST PROTOCOL: 1. VOCAB LIMIT: Keep vocabulary simple (A2-B1 level maximum). Do NOT use difficult or academic words. 2. THINKING DEPTH: Increase difficulty by raising the thinking level, NOT vocabulary. 3. NO KEYWORD MATCHING: Avoid copying exact words from the passage into the answers. 4. NATURAL PHRASING: Use natural, human-like phrasing (avoid robotic phrases like "made a decision" or "felt a sense of"). 5. IDIOMS: Include light, common idioms only when appropriate (e.g., "keep an eye on", "make the most of", "under pressure"). 6. COMPETITIVE DISTRACTORS: Make distractors realistic and competitive. 7. INFO SYNTHESIS: Some answers must require linking two sentences. 8. ADVANCED COMPREHENSION: Include inference and author-attitude questions at higher levels. 9. EXAM VARIETY: Vary question types naturally like real exam writers.', 
+    promptInjection: 'STRICT HUMAN-TEST PROTOCOL: 1. VOCAB LIMIT: Keep vocabulary simple (A2-B1 level maximum). 2. THINKING DEPTH: Increase difficulty by raising the thinking level. 3. NO KEYWORD MATCHING: Avoid copying words from the passage. 4. NATURAL PHRASING: Use human-like phrasing. 5. IDIOMS: Include light idioms. 6. COMPETITIVE DISTRACTORS: Realistic distractors. 7. INFO SYNTHESIS: Linking sentences. 8. ADVANCED COMPREHENSION: Inference questions. 9. EXAM VARIETY: Vary question types. 10. GLOBAL COMPREHENSION: Every set of questions MUST include one "Main Purpose" or "Best Title" question that requires understanding the entire passage, not just one sentence.', 
     active: true, 
     priority: 'High', 
     category: 'Reading' 
+  }, 
   },
   { id: 'mp-13', label: 'KET READING ARCHITECTURE', description: '', promptInjection: 'Follow Cambridge KET (A2 Key) 3-part structure: 1) Signs/Notices/Short messages. 2) 3-4 short profiles of people. (Lower levels: 3 people; Higher levels: 4 people) with matching statements. 3) Longer narrative/informational text with MCQs.', active: true, priority: 'High', category: 'Reading' },
   { id: 'mp-14', label: 'READING SCALING PRINCIPLE', description: '', promptInjection: 'Difficulty must increase gradually based on length of text, critical thinking, and reading comprehension, NOT by excessive vocabulary difficulty. Apply this to ALL reading types.', active: true, priority: 'High', category: 'Reading' },
@@ -430,12 +446,20 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
     label: 'ANTI-ROBOT SENTENCE STARTERS',
     description: 'Prevents repetitive sentence beginnings like "I think".',
     promptInjection: 'STRICT ANTI-ROBOT STARTERS: Forbidden from using repetitive sentence starters. Randomize all subjects and lead-ins.',
-    active: true,
-    priority: 'High',
-    category: 'General'
-  },
+   active: true,
+      priority: 'High',
+      category: 'General'
+    },
+    {
+      id: 'mp-interference-trap',
+      label: 'L1 INTERFERENCE TRAP',
+      description: 'Targets common mistakes made by English learners (e.g., word-for-word translation errors).',
+      promptInjection: 'STRICT: Identify common "L1 Interference" errors for the topic. Example: If testing adjectives, use distractors like "He is very interest" (missing -ed) or "I am boring" (meaning-based error). Test the specific mistakes a real teacher sees in a classroom.',
+      active: true,
+      priority: 'High',
+      category: 'Grammar'
+    }
 ];
-
 export const INITIAL_TEMPLATES: InstructionTemplate[] = [
   // --- FULL TEST COMBINATIONS ---
   { id: 'g_full_mastery', category: 'GRAMMAR', label: 'FULL GRAMMAR TEST', prompt: 'PART: FULL GRAMMAR TEST. Generate a 4-part test. ITEM COUNT: Generate exactly {{COUNT}} items for EACH part. NUMBERING: Number every single item in each part starting from 1. PARTS: 1. Write C (correct) or I (incorrect), 2. MCQ, 3. Circle the correct answers, 4. Double-Gap MCQ. Apply NO-FREE-VERB mandate.', columnCount: 0 },
@@ -445,7 +469,7 @@ export const INITIAL_TEMPLATES: InstructionTemplate[] = [
   // GRAMMAR
   { id: 'g_complete_sentences', category: 'GRAMMAR', label: 'COMPLETE THE FOLLOWING SENTENCES.', prompt: 'Part: Write the correct form of the word in brackets for {{TOPIC}}. Use the style _____________ (13 underscores) and provide the base verb in parentheses at the end of the blank. Apply Result-Based Tense logic. STRICT: No MCQ options.', columnCount: 0 },
   { id: 'g_complete_task', category: 'GRAMMAR', label: 'COMPLETE THE FOLLOWING SENTENCES.', prompt: 'Part: Complete the following sentences about {{TOPIC}}. Use the style _____________ (13 underscores) for all items. Rotate structures. STRICT: No MCQ options. This is a writing task.', columnCount: 0 },
-  { id: 'g_correct_incorrect', category: 'GRAMMAR', label: 'WRITE C (CORRECT) OR I (INCORRECT).', prompt: 'Part: Correct or Incorrect assessment for {{TOPIC}}. Write C for correct and I for incorrect. Use the style "1. _____" (5 underscores). Apply PRAGMATIC BOUNDARY logic (Must vs Have to). STRICT: No MCQ options.', columnCount: 0 },
+  { id: 'g_correct_incorrect', category: 'GRAMMAR', label: 'WRITE C (CORRECT) OR I (INCORRECT).', prompt: 'Part: Correct or Incorrect assessment for {{TOPIC}}. Write C for correct and I for incorrect. Randomize to Use the style for the whole test"1. _____" or "1. _____"  (5 underscores). Apply PRAGMATIC BOUNDARY logic (Must vs Have to). STRICT: No MCQ options.', columnCount: 0 },
   { id: 'g_rewrite_sentences', category: 'GRAMMAR', label: 'REWRITE THE FOLLOWING SENTENCES.', prompt: 'Part: Rewrite the sentences about {{TOPIC}}. Use Rule 7 Conceptual Paraphrasing. STRICT: No MCQ options. Provide a long blank line (_____________________________________________________) for each item.', columnCount: 0 },
   { id: 'g_mcq', category: 'GRAMMAR', label: 'MCQ', prompt: 'Part: Precision MCQ testing {{TOPIC}}. Apply PRAGMATIC BOUNDARY logic. Stems must be situational (e.g., "Grandfather is alone"). Options MUST include correct and incorrect forms (e.g., must visit vs must visits) AND the pragmatically wrong modal (e.g., have to visit).', columnCount: 0 },
   { id: 'g_spelling', category: 'GRAMMAR', label: 'SPELLING RULES', prompt: 'Part: Spelling rules and common errors related to {{TOPIC}}. STRICT: No MCQ options.\nFor example, \nPlural Nouns\n4 columns: 1 singular, 2 plural, 3 singular, 4 plural\n\nif \nAdjective comparison\n6 columns: 1 positive, 2comparative, 3 superlative, 4, 5, 6...', columnCount: 0 },
@@ -458,6 +482,13 @@ export const INITIAL_TEMPLATES: InstructionTemplate[] = [
   { id: 'g_reduce', category: 'GRAMMAR', label: 'REDUCE THE SENTENCE', prompt: 'Reduce the Sentence: Rewrite using fewer words.', columnCount: 0 },
   { id: 'g_best_rewrite', category: 'GRAMMAR', label: 'CHOOSE THE BEST REWRITE', prompt: 'Choose the Best Rewrite', columnCount: 0 },
   { id: 'g_cloze_paragraph', category: 'GRAMMAR', label: 'CLOZE PASSAGE (FULL PARAGRAPH)', prompt: 'Cloze Passage (Full Paragraph): Fill in the blanks.', columnCount: 0 },
+  { 
+    id: 'g_teacher_mode', 
+    category: 'GRAMMAR', 
+    label: 'TEACHER MODE: ERROR CORRECTION', 
+    prompt: 'PART: TEACHER MODE. Generate a paragraph that looks like it was written by a student. It must contain exactly 5 deliberate grammar errors related to {{TOPIC}}. Underneath, provide 5 lines for the student to rewrite the sentences correctly. This tests the ability to "Edit" like a teacher.', 
+    columnCount: 0 
+  },
   
   // READING
   { id: 'r_mcq_rule7', category: 'READING', label: 'READING MCQ (RULE 7)', prompt: 'Part: Reading passage about {{TOPIC}}. Apply Rule 7 Zero Overlap. Apply Reading Logic Firewall. Apply [HUMAN-TEST ARCHITECTURE].', columnCount: 0 },
