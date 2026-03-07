@@ -193,13 +193,24 @@ Test "the [comparative] of the two" (e.g., "the taller of the two") to ensure st
    - You are strictly FORBIDDEN from mixing content between Grammar, Vocabulary, and Reading modules.
    - Ensure each module remains 100% pure to its intended purpose.
 29. [ITEM RANDOMIZATION]: Shuffle all sentence structures, subjects, and contexts. Every generation must feel unique.
-30. [GUARDIAN FOOTER PROTOCOL]:
-   - You MUST append a centered footer at the very end of the document.
-   - The footer must contain:
-     1. Randomize Super Hero in China and Around the worlds hero  (45pt).
-     2. A randomized, inspiring personal development quote in italics.
-     3. The specific text: "Pre5-Chanthy-S2-20Copies-(Grammar)" in bold.
-   - Use HTML for styling: <div style="text-align: center; margin-top: 50px;">...</div>`;
+30. [RANDOMIZED HEROIC FINALE]:
+   - Every time you generate, RANDOMIZE between two visual styles (50/50 chance):
+   
+   - STYLE A: [PORTRAIT MODE - THE HUMAN IMAGE]
+     - Theme: A historical or legendary portrait.
+     - HERO: Choose one random legend (e.g., Liu Bei, Guan Yu, Batman, Superman, Supergirl).
+     - VISUAL: Use an <img> tag with a professional placeholder or iconic silhouette. 
+     - TEXT: "[Hero Name]: The spirit of excellence guides this test."
+     
+   - STYLE B: [HERALDRY MODE - THE SYMBOL]
+     - Theme: Ancient battle flags and modern logos.
+     - ICONS: Pick 1 powerful symbols (e.g., 🛡️, ⚔️, 🐉, 🦅, ⚡).
+     - TEXT: "Mastery through Strategy. Honor through Learning."
+
+   - MANDATORY FOOTER ELEMENTS (Always included):
+     1. Randomized, powerful hero quote in italics.
+     2. "Pre5-Chanthy-S2-20Copies-({{TOPIC}})" in bold.
+     3. A double-border HTML box: <div style="text-align: center; margin-top: 60px; padding: 30px; border: 4px double #ea580c; border-radius: 15px; background: #fff;">...Content...</div>
 
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
 Wrap content in a double border: border: 4px double #ea580c; padding: 25px; border-radius: 12px;`;
