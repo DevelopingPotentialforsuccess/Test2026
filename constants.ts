@@ -79,8 +79,9 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - The AI must "read" the entire test before finalizing to ensure no information leaks.
 
 9. [VISUAL BANNER PROBABILITY]:
-80% OF THE TIME: Use a dark, colorful background banner for Part Headers (Slate Blue, Forest Green, Navy).
-20% OF THE TIME: Use Black and White style (No background, simple bold centered text).`
+   - 80% OF THE TIME: Use a dark, colorful background banner for Part Headers (Slate Blue, Forest Green, Navy). 
+   - 20% OF THE TIME: Use Black and White style (No background, simple bold centered text).
+
 10. [CLARITY]: Ban "AI-speak" like "He knows lines" or "He views print". Use natural child-level actions.
 11. [ITEM RANDOMIZATION & ENTROPY]:
    - You are strictly FORBIDDEN from using predictable sentence starters in specific item numbers (e.g., do NOT always start Item 2 with "I think").
@@ -99,8 +100,8 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
        - "as good a student as" (Singular) vs "as good students as" (Plural).
        - "Of the two" Rule: "Of the two students, he is the taller" (NOT tallest).
        - "Of all" Rule: "Of all the teachers, she is the most hardworking" (Superlative).
-       Test "as [adj] a [noun] as" vs "as a [adj] [noun] as" (the latter is incorrect).
-       Test "the [comparative] of the two" (e.g., "the taller of the two") to ensure students don't use the superlative for only two people.
+       - Test "as [adj] a [noun] as" vs "as a [adj] [noun] as" (the latter is incorrect).
+       - Test "the [comparative] of the two" (e.g., "the taller of the two") to ensure students don't use the superlative for only two people.
        - Comparative vs Superlative Traps: "He is more tall than..." (WRONG) vs "He is taller than..." (RIGHT).
        - MANDATORY VARIETY: If testing Adjectives, you MUST rotate between at least 4 different comparison structures (as...as, comparative -er, superlative -est, of the two).
      - Adverb Placement: Test frequency adverbs (e.g., "He always is" vs "He is always") and manner adverbs.
@@ -211,7 +212,7 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - STYLE A: [THE HERO PORTRAIT]
      - Theme: Legendary portraits.
      - HERO: Choose one random legend (e.g., Liu Bei, Guan Yu, Batman, Zhao Yun, Superman).
-     - VISUAL: You MUST use an <img> tag to display an iconic silhouette or character portrait. 
+     - VISUAL: You MUST use an <img> tag to display an iconic silhouette or character portrait image. 
      - TEXT: "<b>Guardian:</b> [Hero Name]. Mastery through Strategy."
      
    - STYLE B: [THE BATTLE SYMBOLS]
@@ -489,6 +490,8 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
     category: 'General'
   }
 ];
+
+export const INITIAL_TEMPLATES: InstructionTemplate[] = [
   // --- FULL TEST COMBINATIONS ---
   { id: 'g_full_mastery', category: 'GRAMMAR', label: 'FULL GRAMMAR TEST', prompt: 'PART: FULL GRAMMAR TEST. Generate a 4-part test. ITEM COUNT: Generate exactly {{COUNT}} items for EACH part. NUMBERING: Number every single item in each part starting from 1. PARTS: 1. Write C (correct) or I (incorrect), 2. MCQ, 3. Circle the correct answers, 4. Double-Gap MCQ. Apply NO-FREE-VERB mandate.', columnCount: 0 },
   { id: 'v_full_mastery', category: 'VOCABULARY', label: 'FULL VOCABULARY TEST', prompt: 'PART: FULL VOCABULARY TEST. Generate a 4-part test. ITEM COUNT: Generate exactly {{COUNT}} items for EACH part. NUMBERING: Number every single item in each part starting from 1. PARTS: 1. MATCHING, 2. TRUE/FALSE (Definition-based), 3. MCQ, 4. SPEAKING Practice. Apply Pure Vocabulary Firewall. STRICT: NO Reading passages.', columnCount: 0 },
