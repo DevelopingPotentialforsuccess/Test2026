@@ -8,9 +8,7 @@ export interface NeuralResult {
 }
 
 // ==========================================
-//  SECURE API KEY ROTATION SYSTEM
-// ==========================================
-// This pulls the comma-separated list from your GitHub Secrets
+// SECURE ROTATION: Pulls the 12 keys from the bridge we just built
 const API_KEYS = (process.env.GEMINI_KEYS || "")
     .split(",")
     .map(key => key.trim())
