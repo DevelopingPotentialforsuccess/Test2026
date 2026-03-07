@@ -78,7 +78,9 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - Ensure that the answer to a question in Part A is not revealed by a sentence in Part B.
    - The AI must "read" the entire test before finalizing to ensure no information leaks.
 
-9. [NO MARKDOWN]: HTML tags ONLY (<b>, <table>). No asterisks. DO NOT use <u> tags.
+9. [VISUAL BANNER PROBABILITY]:
+80% OF THE TIME: Use a dark, colorful background banner for Part Headers (Slate Blue, Forest Green, Navy).
+20% OF THE TIME: Use Black and White style (No background, simple bold centered text).`
 10. [CLARITY]: Ban "AI-speak" like "He knows lines" or "He views print". Use natural child-level actions.
 11. [ITEM RANDOMIZATION & ENTROPY]:
    - You are strictly FORBIDDEN from using predictable sentence starters in specific item numbers (e.g., do NOT always start Item 2 with "I think").
@@ -171,12 +173,17 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
      - VOCABULARY TABLE: Use a 2-column HTML table (1. Number + Word | Definition).
      - SUPPLY KEY TERMS: Use a 2-column HTML table (1. Easy Definition | Blank for Key Term).
      - STUDY SENTENCES: Use standard sentences, NOT MCQs.
-
+21.1. [HEADER-OUTPUT INTEGRITY]: 
+   - If a section header says "SHORT ANSWER" or "REWRITE", you are STRICTLY FORBIDDEN from providing A, B, C, D options. 
+   - You must provide only the question followed by a blank line "________________".
 22. [EXPERT HUMAN READING EXAMINER MODE]: 
    - All reading assessments must reflect professional design logic. 
    - RED HERRING PROTOCOL: Every passage MUST include details that act as distractors (e.g., if the answer is Sunday, mention Saturday and Monday as well). 
    - COGNITIVE LAYERING: Mix literal retrieval with deep inference. 
    - GLOBAL COMPREHENSION: Always include one question about the overall theme or purpose of the text.
+22.2. [STRUCTURAL IDENTIFIERS]: 
+   - For any text longer than 150 words, you MUST add paragraph markers [P1], [P2], [P3] at the start of each paragraph. 
+   - Refer to these in the questions (e.g., "According to [P2], why was Sarah scared?").
 
 22.1. [RED HERRING PROTOCOL]: 
    - Every reading passage MUST include "Red Herrings" (Distractors within the text). 
@@ -482,7 +489,16 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
     category: 'General'
   }
 ];
-
+,
+    {
+      id: 'mp-banner-styling',
+      label: 'PREMIUM BANNER HEADERS',
+      description: 'Enforces 80% Color Banners / 20% Black & White Headers.',
+      promptInjection: 'STRICT VISUAL STYLE: 80% chance: Use colorful banners (#2c3e50, #15803d, #1e3a8a) with white bold text for Part Headers. 20% chance: Use no background (simple black text).',
+      active: true,
+      priority: 'High',
+      category: 'General'
+    }
 export const INITIAL_TEMPLATES: InstructionTemplate[] = [
   // --- FULL TEST COMBINATIONS ---
   { id: 'g_full_mastery', category: 'GRAMMAR', label: 'FULL GRAMMAR TEST', prompt: 'PART: FULL GRAMMAR TEST. Generate a 4-part test. ITEM COUNT: Generate exactly {{COUNT}} items for EACH part. NUMBERING: Number every single item in each part starting from 1. PARTS: 1. Write C (correct) or I (incorrect), 2. MCQ, 3. Circle the correct answers, 4. Double-Gap MCQ. Apply NO-FREE-VERB mandate.', columnCount: 0 },
