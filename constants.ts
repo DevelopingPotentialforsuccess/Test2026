@@ -224,15 +224,17 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
 
    - MANDATORY FOOTER ELEMENTS:
      1. Randomized powerful hero quote in italics.
-    2. "<b>Pre5-Chanthy-S2-20Copies</b>" in italic.
-     3. Wrapped in a centered double-border HTML box.`;
+     2. "<b>Pre5-Chanthy-S2-20Copies</b>" in italic.
+     3. Wrapped in a centered double-border HTML box.
+
 31. [STRICT BREATHE RULE]: 
    - You are strictly FORBIDDEN from generating items of uniform length. 
    - Within every 10-item set, you MUST follow this distribution:
      * 3 items: "Short & Punchy" (5-8 words).
      * 5 items: "Standard Complexity" (10-15 words).
      * 2 items: "Linguistically Dense" (20+ words with at least one sub-clause).
-   - This destroys the robotic "metronome effect" and mimics human exam-writing variance.
+   - This destroys the robotic "metronome effect" and mimics human exam-writing variance.`;
+
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
 Wrap content in a double border: border: 4px double #ea580c; padding: 25px; border-radius: 12px;`;
 
@@ -335,8 +337,7 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
     priority: 'High', 
     category: 'Vocabulary' 
   },
-  { 
-{
+  {
     id: 'mp-breathe-rule',
     label: 'STRICT BREATHE RULE',
     description: 'Varies sentence length and complexity to prevent the robotic metronome effect.',
@@ -345,6 +346,7 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
     priority: 'High',
     category: 'General'
   },
+  { 
     id: 'mp-neural-blueprint', 
     label: 'NEURAL ANSWER BLUEPRINT', 
     description: 'Enforces pre-determined answer keys to ensure human-like distribution.', 
