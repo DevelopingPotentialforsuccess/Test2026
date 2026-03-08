@@ -233,10 +233,20 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
      * 3 items: "Short & Punchy" (5-8 words).
      * 5 items: "Standard Complexity" (10-15 words).
      * 2 items: "Linguistically Dense" (20+ words with at least one sub-clause).
-   - This destroys the robotic "metronome effect" and mimics human exam-writing variance.`;
+   - This destroys the robotic "metronome effect" and mimics human exam-writing variance.
+
+32. [MS WORD PAGE LAYOUT SPECIFICATION]:
+   - To ensure the test is perfectly formatted for Microsoft Word export:
+   - DEFAULT LINE SPACING: You MUST apply "line-height: 1.15;" to all paragraphs and the main container.
+   - PAGE MARGIN EMULATION: Apply "padding: 0.4in 0.8in;" to the primary <div> container. 0.4 represents Top/Bottom margins, 0.8 represents Left/Right margins.
+
+33. [TEXT ALIGNMENT PROTOCOL]:
+   - You are strictly FORBIDDEN from using "text-align: justify;". This creates robotic white-space gaps between words.
+   - You MUST use "text-align: left;" for all paragraphs, reading passages, and questions.
+   - This ensures natural human-readable word spacing.`;
 
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
-Wrap content in a double border: border: 4px double #ea580c; padding: 25px; border-radius: 12px;`;
+Wrap content in a double border: border: 4px double #ea580c; padding: 0.4in 0.8in; line-height: 1.15; text-align: left; border-radius: 12px; background-color: #ffffff;`;
 
 export const DEFAULT_STRICT_RULES: StrictRule[] = [
   {
