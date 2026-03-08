@@ -78,9 +78,11 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - Ensure that the answer to a question in Part A is not revealed by a sentence in Part B.
    - The AI must "read" the entire test before finalizing to ensure no information leaks.
 
-9. [VISUAL BANNER PROBABILITY]:
-   - 80% OF THE TIME: Use a dark, colorful background banner for Part Headers (Slate Blue, Forest Green, Navy). 
-   - 20% OF THE TIME: Use Black and White style (No background, simple bold centered text).
+9. [VISUAL BANNER PROBABILITY]: 
+   - 80% OF THE TIME: Use a FULL-WIDTH background banner for Part Headers.
+   - HTML STRUCTURE: You MUST use <div style="width: 100%; background-color: [color]; color: white; padding: 10px; display: block; text-align: center; margin-bottom: 15px;"><b>PART X: [TITLE]</b></div>.
+   - The banner MUST touch both sides of the container border.
+   - 20% OF THE TIME: Black and white style.
 
 10. [CLARITY]: Ban "AI-speak" like "He knows lines" or "He views print". Use natural child-level actions.
 11. [ITEM RANDOMIZATION & ENTROPY]:
@@ -199,7 +201,7 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - Every numbered item (1., 2., 3...) MUST be preceded by exactly 6 non-breaking spaces (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).
    - This applies to ALL sections (MCQ, C/I, Matching, etc.).
 
-26. [NO MARKDOWN]: HTML tags ONLY (<b>, <table>). No asterisks. DO NOT use <u> tags.
+26. [NO MARKDOWN]: HTML tags ONLY (<b>, <table>, <div>). No asterisks. DO NOT use <u> tags.
 27. [CLARITY]: Ban "AI-speak" like "He knows lines" or "He views print". Use natural child-level actions.
 28. [STRICT MODULE ISOLATION]:
    - You are strictly FORBIDDEN from mixing content between Grammar, Vocabulary, and Reading modules.
@@ -222,9 +224,15 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
 
    - MANDATORY FOOTER ELEMENTS:
      1. Randomized powerful hero quote in italics.
-     2. "<b>Pre5-Chanthy-S2-20Copies-({{TOPIC}})</b>" in bold.
+    2. "<b>Pre5-Chanthy-S2-20Copies</b>" in italic.
      3. Wrapped in a centered double-border HTML box.`;
-
+31. [STRICT BREATHE RULE]: 
+   - You are strictly FORBIDDEN from generating items of uniform length. 
+   - Within every 10-item set, you MUST follow this distribution:
+     * 3 items: "Short & Punchy" (5-8 words).
+     * 5 items: "Standard Complexity" (10-15 words).
+     * 2 items: "Linguistically Dense" (20+ words with at least one sub-clause).
+   - This destroys the robotic "metronome effect" and mimics human exam-writing variance.
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
 Wrap content in a double border: border: 4px double #ea580c; padding: 25px; border-radius: 12px;`;
 
@@ -328,6 +336,15 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
     category: 'Vocabulary' 
   },
   { 
+{
+    id: 'mp-breathe-rule',
+    label: 'STRICT BREATHE RULE',
+    description: 'Varies sentence length and complexity to prevent the robotic metronome effect.',
+    promptInjection: 'STRICT BREATHE RULE: Within a 10-item set, 3 items must be "short & punchy," 5 must be "standard complexity," and 2 must be "linguistically dense" (long sentences with sub-clauses). This prevents the "metronome effect."',
+    active: true,
+    priority: 'High',
+    category: 'General'
+  },
     id: 'mp-neural-blueprint', 
     label: 'NEURAL ANSWER BLUEPRINT', 
     description: 'Enforces pre-determined answer keys to ensure human-like distribution.', 
@@ -480,11 +497,11 @@ export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
       priority: 'High',
       category: 'Grammar'
     },
-  {
+{
     id: 'mp-banner-styling',
     label: 'PREMIUM BANNER HEADERS',
     description: 'Enforces 80% Color Banners / 20% Black & White Headers.',
-    promptInjection: 'STRICT VISUAL STYLE: Follow 80/20 rule. 80% chance: Use colorful banners (#2c3e50, #15803d, #1e3a8a) with white bold text for Part Headers. 20% chance: Use no background (simple black bold text). Always wrap content in a border box.',
+    promptInjection: 'STRICT VISUAL STYLE: Follow 80/20 rule. 80% chance: Use colorful banners. MANDATORY CSS: Headers must be wrapped in a <div> with width: 100%, display: block, and box-sizing: border-box to ensure they span the full width of the page. Padding should be 10px. 20% chance: simple black bold text centered.',
     active: true,
     priority: 'High',
     category: 'General'
