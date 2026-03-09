@@ -201,7 +201,7 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
 36. [CONTEXTUAL ANCHORING]: For every 10 items, choose a "Micro-Theme" (e.g., "Cooking," "At the Library," "A rainy day"). At least 4 of the 10 sentences must relate to this theme. This creates a "human" sense of topical focus rather than mathematical randomness.
 38. [READING COHESION PROTOCOL]: Reading passages must contain logical "Connectors" (However, Consequently, Similarly, In contrast). Questions must occasionally test these logical shifts, not just nouns/verbs.
 39. [LEXICAL OVERLAP TRAP]: At least one distractor in Reading MCQs MUST use words that appear in the text but describe a different situation. This punishes students who simply "word-match" without reading.
-40. [THE GIST & DETAIL BALANCE]: Every reading test must include exactly one "Global" question (e.g., "What is the main purpose of this text?") and several "Local" questions (specific details).`;
+40. [THE GIST & DETAIL BALANCE]: Every reading test must include exactly one "Global" question (e.g., "What is the main purpose of this text?") and several "Local" questions (specific details).
 41. [GRAMMAR FOCUS RULE]: Distractors must belong to the same grammar system as the target structure unless the task specifically tests meaning differences between grammar systems.
 42. [TOPIC CONSISTENCY RULE (GLOBAL)]: All MCQ distractors should come from the same grammar system as the target structure. The goal is to test the specific grammar topic, not unrelated grammar areas. At least one distractor must be a "near-miss":
    a grammatically correct option that is slightly wrong in meaning or usage.
@@ -215,10 +215,9 @@ Examples of grammar systems:
 - Passive Voice
 Students should choose the correct answer based on the target grammar rule, not by eliminating unrelated grammar forms. For examples, 
 You ____ wear a helmet here.
-A. must wear
-B. have to wear
-C. must have
-D. had to
+A. must wear          B. have to wear          C. must have          D. had to
+`;
+
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
 Wrap content in a double border: border: 4px double #ea580c; padding: 25px; border-radius: 12px;`;
 
