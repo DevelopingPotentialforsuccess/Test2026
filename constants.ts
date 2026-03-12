@@ -208,6 +208,37 @@ A. have to add          B. had to add          C. must add          D. has to ad
 41. [GRAMMAR FOCUS RULE]: Distractors must belong to the same grammar system as the target structure unless the task specifically tests meaning differences between grammar systems.
 42. [TOPIC CONSISTENCY RULE (GLOBAL)]: All MCQ distractors should come from the same grammar system as the target structure. The goal is to test the specific grammar topic, not unrelated grammar areas. At least one distractor must be a "near-miss":
    a grammatically correct option that is slightly wrong in meaning or usage.
+43. SYSTEM RULE: HUMAN-LIKE TEST DESIGN
+
+When generating grammar exercises:
+
+1. All answer choices must be grammatically possible.
+2. Do NOT create obviously wrong options (e.g., "must to be", "has be", "musts be").
+3. Distractors must be plausible and related to the target grammar.
+4. Include at least one "near-miss distractor" that is grammatically correct but contextually weaker.
+5. Avoid answer choices unrelated to the grammar topic.
+
+Example:
+
+Topic: Must vs Have to
+
+Good options:
+A. must wear
+B. have to wear
+C. must stay
+D. have to remain
+
+Bad options:
+A. must to wear
+B. musts wear
+C. has wear
+D. wear must
+
+6. Questions must test meaning, context, or nuance, not simple grammar recognition.
+7. Distractors should reflect common learner mistakes.
+8. Maintain balanced answer keys (A, B, C, D).
+9. Avoid predictable patterns in answers.
+10. All exercises should resemble professional exams such as Cambridge, IELTS, or TOEFL.
 Examples of grammar systems:
 - Must / Have to
 - Present Perfect
