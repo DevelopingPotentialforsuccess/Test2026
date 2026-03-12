@@ -47,7 +47,7 @@ import { callNeuralEngine } from './services/neuralService';
 import { exportToWord } from './services/wordExportService';
 import React, { useState, useEffect, useRef } from 'react';
 import Worksheet from './components/Worksheet';
-import NeuralChatAssistant from './components/NeuralChatAssistant'
+import NeuralChatAssistant from './components/NeuralChatAssistant';
 import { OnboardingTutorial } from './components/OnboardingTutorial';
 
 const DEFAULT_BRAND_SETTINGS: BrandSettings = {
@@ -57,7 +57,7 @@ const DEFAULT_BRAND_SETTINGS: BrandSettings = {
   textTransform: 'none',
   schoolName: 'DPSS ULTIMATE TEST BUILDER',
   schoolAddress: 'Developing Potential for Success School',
-  logos: Array(30).fill(''), // FIXED: Changed from undefined to empty string for Type safety
+  logos: Array(30).fill(''),
   logoWidth: 300,
   logoData: undefined
 };
@@ -550,7 +550,7 @@ function App() {
   const removeLogo = (index: number) => {
     setBrandSettings(prev => {
       const newLogos = [...prev.logos];
-      newLogos[index] = ''; // FIXED: Changed from undefined to empty string
+      newLogos[index] = '';
       return { ...prev, logos: newLogos };
     });
   };
@@ -900,7 +900,7 @@ function App() {
              </div>
              
              <div className="flex-1 overflow-y-auto p-12">
-                {/* SETTINGS CONTENT MAINTAINED PER ORIGINAL REQUEST */}
+                {/* SETTINGS CONTENT MAINTAINED */}
              </div>
 
              <div className="p-12 bg-slate-50 border-t border-slate-100 flex justify-end gap-4">
