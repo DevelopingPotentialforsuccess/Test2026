@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Theme, StrictRule, AcademicLevel, InstructionTemplate } from './types';
 
 export const INITIAL_MODULES = ['Grammar', 'Reading', 'Vocabulary'];
@@ -208,48 +209,6 @@ A. have to add          B. had to add          C. must add          D. has to ad
 41. [GRAMMAR FOCUS RULE]: Distractors must belong to the same grammar system as the target structure unless the task specifically tests meaning differences between grammar systems.
 42. [TOPIC CONSISTENCY RULE (GLOBAL)]: All MCQ distractors should come from the same grammar system as the target structure. The goal is to test the specific grammar topic, not unrelated grammar areas. At least one distractor must be a "near-miss":
    a grammatically correct option that is slightly wrong in meaning or usage.
-43. SYSTEM RULE: HUMAN-LIKE TEST DESIGN
-
-When generating grammar exercises:
-
-1. All answer choices must be grammatically possible.
-2. Do NOT create obviously wrong options (e.g., "must to be", "has be", "musts be").
-3. Distractors must be plausible and related to the target grammar.
-4. Include at least one "near-miss distractor" that is grammatically correct but contextually weaker.
-5. Avoid answer choices unrelated to the grammar topic.
-
-Example:
-
-Topic: Must vs Have to
-
-Good options:
-A. must wear
-B. have to wear
-C. must stay
-D. have to remain
-
-Bad options:
-A. must to wear
-B. musts wear
-C. has wear
-D. wear must
-
-6. Questions must test meaning, context, or nuance, not simple grammar recognition.
-7. Distractors should reflect common learner mistakes.
-8. Maintain balanced answer keys (A, B, C, D).
-9. Avoid predictable patterns in answers.
-10. All exercises should resemble professional exams such as Cambridge, IELTS, or TOEFL.
-Examples of grammar systems:
-- Must / Have to
-- Present Perfect
-- Conditionals
-- Comparatives
-- Articles
-- Prepositions
-- Passive Voice
-Students should choose the correct answer based on the target grammar rule, not by eliminating unrelated grammar forms. For examples, 
-You ____ wear a helmet here.
-A. must wear          B. have to wear          C. must have          D. had to
 `;
 
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
@@ -295,6 +254,43 @@ export const DEFAULT_STRICT_RULES: StrictRule[] = [
 ];
 
 export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
+  {
+    id: 'mp-human-like-design',
+    label: 'SYSTEM RULE: HUMAN-LIKE TEST DESIGN',
+    description: 'Enforces professional exam writer logic and plausible distractors.',
+    promptInjection: `SYSTEM RULE: HUMAN-LIKE TEST DESIGN
+
+When generating grammar exercises:
+
+1. All answer choices must be grammatically possible.
+2. Do NOT create obviously wrong options (e.g., "must to be", "has be", "musts be").
+3. Distractors must be plausible and related to the target grammar.
+4. Include at least one "near-miss distractor" that is grammatically correct but contextually weaker. two near miss distractor is better. 
+5. Avoid answer choices unrelated to the grammar topic.
+
+Example:
+Topic: Must vs Have to
+Good options:
+A. must wear
+B. have to wear
+C. must stay
+D. have to remain
+
+Bad options:
+A. must to wear
+B. musts wear
+C. has wear
+D. wear must
+
+6. Questions must test meaning, context, or nuance, not simple grammar recognition.
+7. Distractors should reflect common learner mistakes.
+8. Maintain balanced answer keys (A, B, C, D).
+9. Avoid predictable patterns in answers.
+10. All exercises should resemble professional exams such as Cambridge, IELTS, or TOEFL.`,
+    active: true,
+    priority: 'High',
+    category: 'Grammar'
+  },
   { id: 'mp-1', label: 'NO-FREE-VERB RULE', description: 'Prevents giving away the verb in the stem.', promptInjection: 'In multiple-choice grammar questions, never place the main auxiliary or modal verb directly in the question stem if it reveals the structure being tested. Weak design: "You must ____ a helmet." Stronger design: "You ____ a helmet." The second version forces students to decide between obligation, advice, or external rule (must wear, have to wear, should wear). They must process meaning, not just grammar form.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-2', label: 'SITUATIONAL EVIDENCE REQUIREMENT', description: 'Forces inference from context, not time markers.', promptInjection: 'Grammar must be inferred from context, not obvious time markers such as yesterday, tomorrow, now, or at the moment. Weak design: "She ____ her homework yesterday." Stronger design: "Her notebook is closed. She ____ her homework." Students must infer completion from evidence, not from time words. This develops reasoning skills.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-3', label: 'HIGH-FIDELITY POOLING', description: '', promptInjection: 'For MCQ, generate at least one "Near-Miss" distractor: a grammatically correct option that is contextually inferior to the target (e.g., testing Must vs Have To nuance).', active: true, priority: 'Medium', category: 'General' },
