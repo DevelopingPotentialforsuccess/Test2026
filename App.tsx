@@ -50,7 +50,6 @@ const DEFAULT_BRAND_SETTINGS: BrandSettings = {
 
 const MASTER_PROTOCOLS_KEY = 'dp_master_v46';
 const STRICT_RULES_KEY = 'dp_rules_v46';
-const TEMPLATES_KEY = 'dp_templates_v46';
 const HISTORY_KEY = 'dp_history_v46';
 const BRAND_SETTINGS_KEY = 'dp_brand_v46';
 const USER_SESSION_KEY = 'dp_session_v46';
