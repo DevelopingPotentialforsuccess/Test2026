@@ -57,7 +57,7 @@ const DEFAULT_BRAND_SETTINGS: BrandSettings = {
   textTransform: 'none',
   schoolName: 'DPSS ULTIMATE TEST BUILDER',
   schoolAddress: 'Developing Potential for Success School',
-  logos: Array(30).fill(undefined),
+  logos: Array(30).fill(''), // FIXED: Changed from undefined to empty string for Type safety
   logoWidth: 300,
   logoData: undefined
 };
@@ -550,7 +550,7 @@ function App() {
   const removeLogo = (index: number) => {
     setBrandSettings(prev => {
       const newLogos = [...prev.logos];
-      newLogos[index] = undefined;
+      newLogos[index] = ''; // FIXED: Changed from undefined to empty string
       return { ...prev, logos: newLogos };
     });
   };
@@ -828,47 +828,4 @@ function App() {
       {viewMode === 'grammar_iframe' && (
         <section className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500">
           <div className="p-4 lg:p-6 border-b border-[#1f2937] flex flex-wrap gap-4 justify-between items-center backdrop-blur-xl z-10 no-print shadow-2xl">
-            <button onClick={() => setViewMode('generator')} className="border border-[#1f2937] text-white px-6 lg:px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-slate-900/50 flex items-center gap-4 group shadow-xl">
-              <i className="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> ARCHITECT
-            </button>
-            <div className="flex-1 text-center">
-              <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Grammar Architect</h2>
-            </div>
-            <div className="flex gap-2">
-              <a 
-                href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
-              >
-                <i className="fa-solid fa-arrow-up-right-from-square"></i> Launch Tool
-              </a>
-            </div>
-          </div>
-          <div className="flex-1 bg-white overflow-hidden relative">
-            <iframe 
-              src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true"
-              className="w-full h-full min-h-[800px] border-none relative z-10"
-              title="Grammar Tool"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-            />
-          </div>
-        </section>
-      )}
-      {viewMode === 'book_creation' && (
-        <section className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500">
-          <div className="p-4 lg:p-6 border-b border-[#1f2937] flex flex-wrap gap-4 justify-between items-center backdrop-blur-xl z-10 no-print shadow-2xl">
-            <button onClick={() => setViewMode('generator')} className="border border-[#1f2937] text-white px-6 lg:px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-slate-900/50 flex items-center gap-4 group shadow-xl">
-              <i className="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> ARCHITECT
-            </button>
-            <div className="flex-1 text-center">
-              <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Book Architect</h2>
-            </div>
-            <div className="flex gap-2">
-              <a 
-                href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
-              >
-                <i className="f
+            <button onClick={() => setViewMode('generator')} className="border border-[#1f2937] text-white px-6 lg:px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-slate-900/5
