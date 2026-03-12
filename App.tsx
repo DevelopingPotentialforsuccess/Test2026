@@ -192,6 +192,7 @@ function App() {
       return [...parsed, ...missing];
     } catch { return DEFAULT_MASTER_PROTOCOLS; }
   });
+
   const [strictRules, setStrictRules] = useState<StrictRule[]>(() => {
     try {
       const saved = localStorage.getItem(STRICT_RULES_KEY);
@@ -202,6 +203,7 @@ function App() {
       return [...parsed, ...missing];
     } catch { return DEFAULT_STRICT_RULES; }
   });
+
   const [instructionTemplates, setInstructionTemplates] = useState<InstructionTemplate[]>(() => {
     try {
       const saved = localStorage.getItem(TEMPLATES_KEY);
