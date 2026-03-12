@@ -127,7 +127,6 @@ function App() {
     const fetchBrandSettings = async () => {
       setIsBrandLoaded(false);
       loadedEmailRef.current = null;
-
       if (session?.email) {
         try {
           const docRef = doc(db, 'user_settings', session.email);
@@ -266,7 +265,6 @@ function App() {
     } catch (e) {
       console.warn("Storage quota exceeded.", e);
     }
-    
     const persistBrandSettings = async () => {
       if (session?.email && isBrandLoaded && loadedEmailRef.current === session.email) {
         try {
@@ -283,11 +281,9 @@ function App() {
   useEffect(() => { 
     localStorage.setItem('dp_theme_v30', activeThemeId); 
     const theme = THEMES.find(t => t.id === activeThemeId) || THEMES[0];
-    
     document.documentElement.style.setProperty('--primary-orange', theme.color);
     document.documentElement.style.setProperty('--accent-orange-light', theme.accent);
     document.documentElement.style.setProperty('--accent-orange-dark', theme.color);
-    
     const body = document.body;
     if (theme.bg.startsWith('linear-gradient') || theme.bg.startsWith('radial-gradient')) {
       body.style.backgroundImage = theme.bg;
@@ -296,10 +292,8 @@ function App() {
       body.style.backgroundColor = theme.bg;
       body.style.backgroundImage = 'none';
     }
-
     const isDark = theme.id === 'midnight' || theme.id === 'nebula';
     body.style.color = isDark ? '#f8fafc' : '#1e293b';
-    
     const main = document.querySelector('main');
     const aside = document.querySelector('aside');
     if (main) {
@@ -336,13 +330,11 @@ function App() {
     const name = loginName.trim();
     if (!name) { setLoginError('Full name is required.'); return; }
     const validCodes = ['virtues', 'gratitude', 'dpss'];
-    
     if (validCodes.includes(code)) {
       try {
         const email = `${name.toLowerCase().replace(/\s+/g, '_')}@local.dpss`;
         const docRef = doc(db, 'allowed_users', email);
         const docSnap = await getDoc(docRef);
-        
         if (!docSnap.exists()) {
           await setDoc(docRef, {
             email: email,
@@ -355,13 +347,7 @@ function App() {
         } else {
           await updateDoc(docRef, { lastLogin: Date.now() });
         }
-
-        const newSession: UserSession = { 
-          name: name, 
-          code: code, 
-          loginTime: Date.now(),
-          email: email
-        };
+        const newSession: UserSession = { name: name, code: code, loginTime: Date.now(), email: email };
         setSession(newSession);
         localStorage.setItem(USER_SESSION_KEY, JSON.stringify(newSession));
       } catch (err: any) {
@@ -372,16 +358,8 @@ function App() {
     }
   };
 
-  const handleLogout = async () => { 
-    setSession(null); 
-    localStorage.removeItem(USER_SESSION_KEY); 
-  };
-  
-  const handleOnboardingComplete = () => {
-    setShowOnboarding(false);
-    localStorage.setItem(ONBOARDING_KEY, 'completed');
-  };
-
+  const handleLogout = async () => { setSession(null); localStorage.removeItem(USER_SESSION_KEY); };
+  const handleOnboardingComplete = () => { setShowOnboarding(false); localStorage.setItem(ONBOARDING_KEY, 'completed'); };
   const toggleInstruction = (id: string) => setSelectedInstructionIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   const setItemCount = (id: string, count: number) => setItemCountOverrides(prev => ({ ...prev, [id]: count }));
   const adjustColumns = (id: string, delta: number) => {
@@ -400,10 +378,7 @@ function App() {
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        alert("Image too large.");
-        return;
-      }
+      if (file.size > 10 * 1024 * 1024) { alert("Image too large."); return; }
       const reader = new FileReader();
       reader.onload = (event) => {
         const img = new Image();
@@ -412,13 +387,9 @@ function App() {
           const MAX_DIM = 600; 
           let width = img.width;
           let height = img.height;
-          if (width > height) {
-            if (width > MAX_DIM) { height *= MAX_DIM / width; width = MAX_DIM; }
-          } else {
-            if (height > MAX_DIM) { width *= MAX_DIM / height; height = MAX_DIM; }
-          }
-          canvas.width = width;
-          canvas.height = height;
+          if (width > height) { if (width > MAX_DIM) { height *= MAX_DIM / width; width = MAX_DIM; } } 
+          else { if (height > MAX_DIM) { width *= MAX_DIM / height; height = MAX_DIM; } }
+          canvas.width = width; canvas.height = height;
           const ctx = canvas.getContext('2d');
           if (ctx) {
              ctx.drawImage(img, 0, 0, width, height);
@@ -426,8 +397,7 @@ function App() {
              setBrandSettings(prev => {
                const newLogos = [...prev.logos];
                const firstEmpty = newLogos.findIndex(l => !l);
-               if (firstEmpty !== -1) newLogos[firstEmpty] = dataUrl;
-               else newLogos.push(dataUrl);
+               if (firstEmpty !== -1) newLogos[firstEmpty] = dataUrl; else newLogos.push(dataUrl);
                return { ...prev, logos: newLogos, logoData: dataUrl };
              });
           }
@@ -480,9 +450,7 @@ function App() {
     const selectedBlankStyle = '____________________';
     const protocolsPrompt = filteredProtocols.map(p => `[PROTOCOL - ${p.priority}]: ${p.promptInjection.replace(/{{BLANK}}/g, selectedBlankStyle)}`).join('\n');
     const rulesPrompt = filteredRules.map(r => `[STRICT RULE - ${r.priority}]: ${r.promptInjection.replace(/{{BLANK}}/g, selectedBlankStyle)}`).join('\n');
-    const strategyInstruction = answerStrategy === 'GENERAL_MIXED' 
-      ? `[STRATEGY]: GENERAL-MIXED. Context: {{TOPIC}}.` : `[STRATEGY]: TOPIC-FOCUSED. Context: {{TOPIC}}.`;
-
+    const strategyInstruction = answerStrategy === 'GENERAL_MIXED' ? `[STRATEGY]: GENERAL-MIXED. Context: {{TOPIC}}.` : `[STRATEGY]: TOPIC-FOCUSED. Context: {{TOPIC}}.`;
     const componentLogic = selectedTemps.map((t, idx) => {
       const overrideCol = columnOverrides[t.id] || 0;
       const overrideItems = itemCountOverrides[t.id] || 10;
@@ -491,12 +459,9 @@ function App() {
       const formatInstruction = overrideCol > 0 ? `(FORMAT: HTML <table> with ${overrideCol} columns.)` : '';
       return `PART ${String.fromCharCode(65 + idx)} [MANDATORY INSTRUCTION HEADER: ${t.label}]: ${t.prompt.replace(/{{BLANK}}/g, selectedBlankStyle)} (GENERATE EXACTLY ${overrideItems} ITEMS) (USE THIS ANSWER KEY: ${blueprintStr}) ${formatInstruction}`;
     }).join('\n\n');
-
     const moduleSafetyGuard = activeModule === 'Grammar' ? `[MODULE SAFETY GUARD]: GRAMMAR assessment focus.` : '';
     const mandatorySequence = `1. PRE-ASSIGN balanced answer keys.\n2. GENERATE PARTS for "${topic}".`;
-
     const finalLogic = `${moduleSafetyGuard}\n${GLOBAL_STRICT_COMMAND.replace(/{{TOPIC}}/g, topic || "General English")}\n${protocolsPrompt}\n${strategyInstruction.replace(/{{TOPIC}}/g, topic || "General English")}\n${rulesPrompt}\n[SYSTEM OBJECTIVE]: COMPLETE assessment.\n[TARGET]: "${topic}"\n[LEVEL]: ${activeLevel}\n### SEQUENCE ###\n${mandatorySequence}\n${componentLogic}`;
-
     try {
       const availableLogos = brandSettings.logos.filter(l => !!l);
       if (availableLogos.length > 0) {
@@ -505,25 +470,11 @@ function App() {
       }
       const result = await callNeuralEngine(activeEngine, finalLogic, protocolsPrompt, sourceMaterial, externalKeys);
       setWorksheetContent(result.text);
-      setIsGenerating(false);
-      setViewMode('preview');
-      const newTestItem = {
-        id: `hist-${Date.now()}`,
-        title: `${activeLanguage} ${activeModule}: ${activeLevel} - ${topic || "Synthesis"}`,
-        content: result.text,
-        timestamp: Date.now(),
-        module: activeModule,
-        level: activeLevel,
-        topic: topic,
-        authorName: session?.name || 'Anonymous',
-        authorEmail: session?.email || 'N/A'
-      };
+      setIsGenerating(false); setViewMode('preview');
+      const newTestItem = { id: `hist-${Date.now()}`, title: `${activeLanguage} ${activeModule}: ${activeLevel} - ${topic || "Synthesis"}`, content: result.text, timestamp: Date.now(), module: activeModule, level: activeLevel, topic: topic, authorName: session?.name || 'Anonymous', authorEmail: session?.email || 'N/A' };
       setHistory(prev => [newTestItem, ...prev].slice(0, 30));
       await addDoc(collection(db, 'generatedTests'), newTestItem);
-    } catch (error: any) {
-      alert("Neural synthesis failed.");
-      setIsGenerating(false);
-    }
+    } catch (error: any) { alert("Neural synthesis failed."); setIsGenerating(false); }
   };
 
   const handleAssistantMessage = async (msg: string, file?: QuickSource) => {
@@ -549,7 +500,6 @@ function App() {
   const deleteTemplate = (id: string) => setInstructionTemplates(prev => prev.filter(t => t.id !== id));
   const deleteRule = (id: string) => setStrictRules(prev => prev.filter(r => r.id !== id));
   const deleteProtocol = (id: string) => setMasterProtocols(prev => prev.filter(p => p.id !== id));
-  
   const syncWithDefaults = () => {
     setMasterProtocols(prev => [...prev, ...DEFAULT_MASTER_PROTOCOLS.filter(p => !prev.some(x => x.id === p.id))]);
     setStrictRules(prev => [...prev, ...DEFAULT_STRICT_RULES.filter(r => !prev.some(x => x.id === r.id))]);
@@ -557,28 +507,10 @@ function App() {
     alert("Synchronized.");
   };
 
-  const hardReset = () => {
-    if (confirm("Delete all?")) {
-      localStorage.removeItem(MASTER_PROTOCOLS_KEY);
-      localStorage.removeItem(STRICT_RULES_KEY);
-      localStorage.removeItem(TEMPLATES_KEY);
-      window.location.reload();
-    }
-  };
-
-  const addRule = () => {
-    const newRule: StrictRule = { id: `rule-${Date.now()}`, label: 'NEW LOGIC NODE', description: '', promptInjection: '', active: true, priority: 'Medium', category: activeLogicCategory };
-    setStrictRules([...strictRules, newRule]); setExpandedRuleId(newRule.id);
-  };
-  const addProtocol = () => {
-    const newProtocol: StrictRule = { id: `mp-${Date.now()}`, label: 'NEW PROTOCOL', description: '', promptInjection: '', active: true, priority: 'Medium', category: activeProtocolCategory };
-    setMasterProtocols([...masterProtocols, newProtocol]); setExpandedProtocolId(newProtocol.id);
-  };
-  const addTemplate = () => {
-    const newId = `temp-${Date.now()}`;
-    setInstructionTemplates(prev => [...prev, { id: newId, label: `NEW PART`, prompt: `Detail logic...`, category: activeTemplateCategory as any, columnCount: 0 }]);
-    setExpandedTemplateId(newId);
-  };
+  const hardReset = () => { if (confirm("Delete all?")) { localStorage.removeItem(MASTER_PROTOCOLS_KEY); localStorage.removeItem(STRICT_RULES_KEY); localStorage.removeItem(TEMPLATES_KEY); window.location.reload(); } };
+  const addRule = () => { const newRule: StrictRule = { id: `rule-${Date.now()}`, label: 'NEW LOGIC NODE', description: '', promptInjection: '', active: true, priority: 'Medium', category: activeLogicCategory }; setStrictRules([...strictRules, newRule]); setExpandedRuleId(newRule.id); };
+  const addProtocol = () => { const newProtocol: StrictRule = { id: `mp-${Date.now()}`, label: 'NEW PROTOCOL', description: '', promptInjection: '', active: true, priority: 'Medium', category: activeProtocolCategory }; setMasterProtocols([...masterProtocols, newProtocol]); setExpandedProtocolId(newProtocol.id); };
+  const addTemplate = () => { const newId = `temp-${Date.now()}`; setInstructionTemplates(prev => [...prev, { id: newId, label: `NEW PART`, prompt: `Detail logic...`, category: activeTemplateCategory as any, columnCount: 0 }]); setExpandedTemplateId(newId); };
 
   if (!session) {
     return (
@@ -660,23 +592,13 @@ function App() {
               <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Grammar Architect</h2>
             </div>
             <div className="flex gap-2">
-              <a 
-                href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
-              >
+              <a href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2">
                 <i className="fa-solid fa-arrow-up-right-from-square"></i> Launch Tool
               </a>
             </div>
           </div>
           <div className="flex-1 bg-white overflow-hidden relative">
-            <iframe 
-              src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true"
-              className="w-full h-full min-h-[800px] border-none relative z-10"
-              title="Grammar Tool"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-            />
+            <iframe src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" className="w-full h-full min-h-[800px] border-none relative z-10" title="Grammar Tool" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
           </div>
         </section>
       )}
@@ -690,22 +612,13 @@ function App() {
               <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Book Architect</h2>
             </div>
             <div className="flex gap-2">
-              <a 
-                href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
-              >
+              <a href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2">
                 <i className="fa-solid fa-arrow-up-right-from-square"></i> Launch Tool
               </a>
             </div>
           </div>
           <div className="flex-1 bg-white overflow-hidden relative">
-            <iframe 
-              src="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/"
-              className="w-full h-full min-h-[800px] border-none relative z-10"
-              title="Book Creation Tool"
-            />
+            <iframe src="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" className="w-full h-full min-h-[800px] border-none relative z-10" title="Book Creation Tool" />
           </div>
         </section>
       )}
