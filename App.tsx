@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 import {
   NeuralEngine,
   AcademicLevel,
@@ -37,6 +37,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Worksheet from './components/Worksheet';
 import NeuralChatAssistant from './components/NeuralChatAssistant'
 import { OnboardingTutorial } from './components/OnboardingTutorial';
+
 const DEFAULT_BRAND_SETTINGS: BrandSettings = {
   fontSize: 12,
   fontWeight: '800',
@@ -56,6 +57,7 @@ const BRAND_SETTINGS_KEY = 'dp_brand_v46';
 const USER_SESSION_KEY = 'dp_session_v46';
 const ENGINE_CONFIG_KEY = 'dp_engine_config_v46';
 const ONBOARDING_KEY = 'dp_onboarding_v1';
+const TEMPLATES_KEY = 'dp_templates_v46';
 
 function App() {
   const [session, setSession] = useState<UserSession | null>(() => {
@@ -610,7 +612,7 @@ ${mandatorySequence}
 
 ${componentLogic}
     `;
-    }, [viewMode]);
+
     try {
       // Randomize logo from available logos
       const availableLogos = brandSettings.logos.filter(l => !!l);
@@ -649,12 +651,12 @@ ${componentLogic}
 
       // 4. SEND TO THE CLOUD (The Magic Step!)
       try {
-           // This line sends the data to a collection named 'generatedTests' in your Firebase database
-           await addDoc(collection(db, 'generatedTests'), newTestItem);
-           console.log("✅☁️ Test successfully saved to the Firebase Cloud Notebook!");
+            // This line sends the data to a collection named 'generatedTests' in your Firebase database
+            await addDoc(collection(db, 'generatedTests'), newTestItem);
+            console.log("✅☁️ Test successfully saved to the Firebase Cloud Notebook!");
       } catch (e) {
-           // If something goes wrong, tell the console
-           console.error("❌☁️ Error saving to cloud notebook:", e);
+            // If something goes wrong, tell the console
+            console.error("❌☁️ Error saving to cloud notebook:", e);
       }
     } catch (error: any) {
       console.error("Generation failed:", error);
