@@ -59,7 +59,7 @@ const DEFAULT_BRAND_SETTINGS: BrandSettings = {
   schoolAddress: 'Developing Potential for Success School',
   logos: Array(30).fill(''),
   logoWidth: 300,
-  logoData: undefined
+  logoData: ''
 };
 
 const MASTER_PROTOCOLS_KEY = 'dp_master_v46';
@@ -900,7 +900,10 @@ function App() {
              </div>
              
              <div className="flex-1 overflow-y-auto p-12">
-                {/* SETTINGS CONTENT MAINTAINED */}
+                <div className="p-8 bg-slate-100 rounded-3xl border border-slate-200">
+                   <h3 className="font-black uppercase text-slate-400 text-[10px] mb-4">Active Logic Tab</h3>
+                   <p className="text-slate-900 font-bold uppercase">{settingsTab}</p>
+                </div>
              </div>
 
              <div className="p-12 bg-slate-50 border-t border-slate-100 flex justify-end gap-4">
