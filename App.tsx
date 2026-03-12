@@ -28,7 +28,19 @@ import {
 
 // --- THE NEW FIREBASE MAGIC ---
 import { db } from './firebase';
-import { collection, addDoc, doc, getDoc, setDoc, updateDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { 
+  collection, 
+  addDoc, 
+  doc, 
+  getDoc, 
+  setDoc, 
+  updateDoc, 
+  query, 
+  where, 
+  getDocs, 
+  orderBy, 
+  limit 
+} from 'firebase/firestore';
 // ------------------------------
 
 import { callNeuralEngine } from './services/neuralService';
@@ -63,8 +75,13 @@ function App() {
   const [session, setSession] = useState<UserSession | null>(() => {
     try {
       const saved = localStorage.getItem(USER_SESSION_KEY);
-      return saved ? JSON.parse(saved) : null;
-    } catch { return null; }
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      return null;
+    } catch (e) { 
+      return null; 
+    }
   });
 
   const [authLoading, setAuthLoading] = useState(false);
@@ -95,44 +112,70 @@ function App() {
   const [activeThemeId, setActiveThemeId] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('dp_theme_v30');
-      return saved || 'default';
-    } catch { return 'default'; }
+      if (saved) {
+        return saved;
+      }
+      return 'default';
+    } catch (e) { 
+      return 'default'; 
+    }
   });
 
   const [activeEngine, setActiveEngine] = useState<NeuralEngine>(() => {
     try {
       const saved = localStorage.getItem(ENGINE_CONFIG_KEY);
-      return saved ? JSON.parse(saved).active : NeuralEngine.GEMINI_3_FLASH;
-    } catch { return NeuralEngine.GEMINI_3_FLASH; }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.active;
+      }
+      return NeuralEngine.GEMINI_3_FLASH;
+    } catch (e) { 
+      return NeuralEngine.GEMINI_3_FLASH; 
+    }
   });
 
   const [externalKeys, setExternalKeys] = useState<ExternalKeys>(() => {
     try {
       const saved = localStorage.getItem(ENGINE_CONFIG_KEY);
-      return saved ? JSON.parse(saved).keys : {};
-    } catch { return {}; }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.keys;
+      }
+      return {};
+    } catch (e) { 
+      return {}; 
+    }
   });
   
   const [brandSettings, setBrandSettings] = useState<BrandSettings>(() => {
     try {
       const saved = localStorage.getItem(BRAND_SETTINGS_KEY);
-      return saved ? JSON.parse(saved) : DEFAULT_BRAND_SETTINGS;
-    } catch { return DEFAULT_BRAND_SETTINGS; }
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      return DEFAULT_BRAND_SETTINGS;
+    } catch (e) { 
+      return DEFAULT_BRAND_SETTINGS; 
+    }
   });
 
   const [isBrandLoaded, setIsBrandLoaded] = useState(false);
   const loadedEmailRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const fetchBrandSettings = async () => {
+    const fetchBrandSettingsFromCloud = async () => {
       setIsBrandLoaded(false);
       loadedEmailRef.current = null;
-      if (session?.email) {
+
+      if (session && session.email) {
         try {
           const docRef = doc(db, 'user_settings', session.email);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().brandSettings) {
-            setBrandSettings(docSnap.data().brandSettings);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.brandSettings) {
+              setBrandSettings(data.brandSettings);
+            }
           }
           loadedEmailRef.current = session.email;
         } catch (e) {
@@ -144,14 +187,19 @@ function App() {
         setIsBrandLoaded(true);
       }
     };
-    fetchBrandSettings();
+    fetchBrandSettingsFromCloud();
   }, [session?.email]);
   
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     try {
       const saved = localStorage.getItem(HISTORY_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      return [];
+    } catch (e) { 
+      return []; 
+    }
   });
 
   const fetchCloudHistory = async (email: string) => {
@@ -176,7 +224,7 @@ function App() {
   };
 
   useEffect(() => {
-    if (session?.email) {
+    if (session && session.email) {
       fetchCloudHistory(session.email);
     }
   }, [session?.email]);
@@ -185,33 +233,45 @@ function App() {
     try {
       const saved = localStorage.getItem(MASTER_PROTOCOLS_KEY);
       let parsed = saved ? JSON.parse(saved) : DEFAULT_MASTER_PROTOCOLS;
-      if (!Array.isArray(parsed)) parsed = DEFAULT_MASTER_PROTOCOLS;
+      if (!Array.isArray(parsed)) {
+        parsed = DEFAULT_MASTER_PROTOCOLS;
+      }
       const existingIds = new Set(parsed.map((p: any) => p.id));
       const missing = DEFAULT_MASTER_PROTOCOLS.filter(p => !existingIds.has(p.id));
       return [...parsed, ...missing];
-    } catch { return DEFAULT_MASTER_PROTOCOLS; }
+    } catch (e) { 
+      return DEFAULT_MASTER_PROTOCOLS; 
+    }
   });
 
   const [strictRules, setStrictRules] = useState<StrictRule[]>(() => {
     try {
       const saved = localStorage.getItem(STRICT_RULES_KEY);
       let parsed = saved ? JSON.parse(saved) : DEFAULT_STRICT_RULES;
-      if (!Array.isArray(parsed)) parsed = DEFAULT_STRICT_RULES;
+      if (!Array.isArray(parsed)) {
+        parsed = DEFAULT_STRICT_RULES;
+      }
       const existingIds = new Set(parsed.map((r: any) => r.id));
       const missing = DEFAULT_STRICT_RULES.filter(r => !existingIds.has(r.id));
       return [...parsed, ...missing];
-    } catch { return DEFAULT_STRICT_RULES; }
+    } catch (e) { 
+      return DEFAULT_STRICT_RULES; 
+    }
   });
 
   const [instructionTemplates, setInstructionTemplates] = useState<InstructionTemplate[]>(() => {
     try {
       const saved = localStorage.getItem(TEMPLATES_KEY);
       let parsed = saved ? JSON.parse(saved) : INITIAL_TEMPLATES;
-      if (!Array.isArray(parsed)) parsed = INITIAL_TEMPLATES;
+      if (!Array.isArray(parsed)) {
+        parsed = INITIAL_TEMPLATES;
+      }
       const existingIds = new Set(parsed.map((t: any) => t.id));
       const missing = INITIAL_TEMPLATES.filter(t => !existingIds.has(t.id));
       return [...parsed, ...missing];
-    } catch { return INITIAL_TEMPLATES; }
+    } catch (e) { 
+      return INITIAL_TEMPLATES; 
+    }
   });
 
   const [selectedInstructionIds, setSelectedInstructionIds] = useState<string[]>([]);
@@ -229,8 +289,13 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     try {
       const saved = localStorage.getItem(ONBOARDING_KEY);
-      return saved !== 'completed';
-    } catch { return true; }
+      if (saved === 'completed') {
+        return false;
+      }
+      return true;
+    } catch (e) { 
+      return true; 
+    }
   });
 
   useEffect(() => { 
@@ -244,19 +309,25 @@ function App() {
   useEffect(() => { 
     try {
       localStorage.setItem(TEMPLATES_KEY, JSON.stringify(instructionTemplates)); 
-    } catch (e) { console.warn("Templates storage limit reached", e); }
+    } catch (e) { 
+      console.warn("Templates storage limit reached", e); 
+    }
   }, [instructionTemplates]);
 
   useEffect(() => { 
     try {
       localStorage.setItem(STRICT_RULES_KEY, JSON.stringify(strictRules)); 
-    } catch (e) { console.warn("Rules storage limit reached", e); }
+    } catch (e) { 
+      console.warn("Rules storage limit reached", e); 
+    }
   }, [strictRules]);
 
   useEffect(() => { 
     try {
       localStorage.setItem(MASTER_PROTOCOLS_KEY, JSON.stringify(masterProtocols)); 
-    } catch (e) { console.warn("Protocols storage limit reached", e); }
+    } catch (e) { 
+      console.warn("Protocols storage limit reached", e); 
+    }
   }, [masterProtocols]);
 
   useEffect(() => { 
@@ -265,11 +336,12 @@ function App() {
     } catch (e) {
       console.warn("Storage quota exceeded.", e);
     }
+    
     const persistBrandSettings = async () => {
-      if (session?.email && isBrandLoaded && loadedEmailRef.current === session.email) {
+      if (session && session.email && isBrandLoaded && loadedEmailRef.current === session.email) {
         try {
           const docRef = doc(db, 'user_settings', session.email);
-          await setDoc(docRef, { brandSettings }, { merge: true });
+          await setDoc(docRef, { brandSettings: brandSettings }, { merge: true });
         } catch (e) {
           console.error("Error persisting brand settings:", e);
         }
@@ -281,9 +353,11 @@ function App() {
   useEffect(() => { 
     localStorage.setItem('dp_theme_v30', activeThemeId); 
     const theme = THEMES.find(t => t.id === activeThemeId) || THEMES[0];
+    
     document.documentElement.style.setProperty('--primary-orange', theme.color);
     document.documentElement.style.setProperty('--accent-orange-light', theme.accent);
     document.documentElement.style.setProperty('--accent-orange-dark', theme.color);
+    
     const body = document.body;
     if (theme.bg.startsWith('linear-gradient') || theme.bg.startsWith('radial-gradient')) {
       body.style.backgroundImage = theme.bg;
@@ -292,8 +366,10 @@ function App() {
       body.style.backgroundColor = theme.bg;
       body.style.backgroundImage = 'none';
     }
+
     const isDark = theme.id === 'midnight' || theme.id === 'nebula';
     body.style.color = isDark ? '#f8fafc' : '#1e293b';
+    
     const main = document.querySelector('main');
     const aside = document.querySelector('aside');
     if (main) {
@@ -312,7 +388,8 @@ function App() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const randomTheme = THEMES[Math.floor(Math.random() * THEMES.length)];
+      const randomIndex = Math.floor(Math.random() * THEMES.length);
+      const randomTheme = THEMES[randomIndex];
       setActiveThemeId(randomTheme.id);
     }, 30000);
     return () => clearInterval(interval);
@@ -321,20 +398,26 @@ function App() {
   const cyclePriority = (current: Priority): Priority => {
     const priorities: Priority[] = ['Low', 'Average', 'Medium', 'High'];
     const currentIndex = priorities.indexOf(current);
-    return priorities[(currentIndex + 1) % priorities.length];
+    const nextIndex = (currentIndex + 1) % priorities.length;
+    return priorities[nextIndex];
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = loginCode.toLowerCase().trim();
     const name = loginName.trim();
-    if (!name) { setLoginError('Full name is required.'); return; }
+    if (!name) { 
+      setLoginError('Full name is required.'); 
+      return; 
+    }
     const validCodes = ['virtues', 'gratitude', 'dpss'];
+    
     if (validCodes.includes(code)) {
       try {
         const email = `${name.toLowerCase().replace(/\s+/g, '_')}@local.dpss`;
         const docRef = doc(db, 'allowed_users', email);
         const docSnap = await getDoc(docRef);
+        
         if (!docSnap.exists()) {
           await setDoc(docRef, {
             email: email,
@@ -345,9 +428,17 @@ function App() {
             accessCodeUsed: code
           });
         } else {
-          await updateDoc(docRef, { lastLogin: Date.now() });
+          await updateDoc(docRef, { 
+            lastLogin: Date.now() 
+          });
         }
-        const newSession: UserSession = { name: name, code: code, loginTime: Date.now(), email: email };
+
+        const newSession: UserSession = { 
+          name: name, 
+          code: code, 
+          loginTime: Date.now(),
+          email: email
+        };
         setSession(newSession);
         localStorage.setItem(USER_SESSION_KEY, JSON.stringify(newSession));
       } catch (err: any) {
@@ -358,19 +449,50 @@ function App() {
     }
   };
 
-  const handleLogout = async () => { setSession(null); localStorage.removeItem(USER_SESSION_KEY); };
-  const handleOnboardingComplete = () => { setShowOnboarding(false); localStorage.setItem(ONBOARDING_KEY, 'completed'); };
-  const toggleInstruction = (id: string) => setSelectedInstructionIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-  const setItemCount = (id: string, count: number) => setItemCountOverrides(prev => ({ ...prev, [id]: count }));
+  const handleLogout = async () => { 
+    setSession(null); 
+    localStorage.removeItem(USER_SESSION_KEY); 
+  };
+  
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    localStorage.setItem(ONBOARDING_KEY, 'completed');
+  };
+
+  const toggleInstruction = (id: string) => {
+    setSelectedInstructionIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(i => i !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  const setItemCount = (id: string, count: number) => {
+    setItemCountOverrides(prev => ({ ...prev, [id]: count }));
+  };
+
   const adjustColumns = (id: string, delta: number) => {
-    setColumnOverrides(prev => ({ ...prev, [id]: Math.max(0, Math.min(6, (prev[id] || 0) + delta)) }));
+    setColumnOverrides(prev => {
+      const current = prev[id] || 0;
+      const next = Math.max(0, Math.min(6, current + delta));
+      return { ...prev, [id]: next };
+    });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => setSourceMaterial({ data: (event.target?.result as string).split(',')[1], mimeType: file.type, name: file.name });
+      reader.onload = (event) => {
+        const base64 = (event.target?.result as string).split(',')[1];
+        setSourceMaterial({ 
+          data: base64, 
+          mimeType: file.type, 
+          name: file.name 
+        });
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -378,7 +500,10 @@ function App() {
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) { alert("Image too large."); return; }
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Image too large.");
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
         const img = new Image();
@@ -387,9 +512,19 @@ function App() {
           const MAX_DIM = 600; 
           let width = img.width;
           let height = img.height;
-          if (width > height) { if (width > MAX_DIM) { height *= MAX_DIM / width; width = MAX_DIM; } } 
-          else { if (height > MAX_DIM) { width *= MAX_DIM / height; height = MAX_DIM; } }
-          canvas.width = width; canvas.height = height;
+          if (width > height) {
+            if (width > MAX_DIM) { 
+              height *= MAX_DIM / width; 
+              width = MAX_DIM; 
+            }
+          } else {
+            if (height > MAX_DIM) { 
+              width *= MAX_DIM / height; 
+              height = MAX_DIM; 
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
           const ctx = canvas.getContext('2d');
           if (ctx) {
              ctx.drawImage(img, 0, 0, width, height);
@@ -397,7 +532,11 @@ function App() {
              setBrandSettings(prev => {
                const newLogos = [...prev.logos];
                const firstEmpty = newLogos.findIndex(l => !l);
-               if (firstEmpty !== -1) newLogos[firstEmpty] = dataUrl; else newLogos.push(dataUrl);
+               if (firstEmpty !== -1) {
+                 newLogos[firstEmpty] = dataUrl;
+               } else {
+                 newLogos.push(dataUrl);
+               }
                return { ...prev, logos: newLogos, logoData: dataUrl };
              });
           }
@@ -424,7 +563,10 @@ function App() {
     const minPerLetter = count >= 8 ? 2 : 1;
     for (const key of keys) {
       for (let i = 0; i < minPerLetter; i++) {
-        if (blueprint.length < count) { blueprint.push(key); counts[key]++; }
+        if (blueprint.length < count) { 
+          blueprint.push(key); 
+          counts[key]++; 
+        }
       }
     }
     while (blueprint.length < count) {
@@ -441,7 +583,10 @@ function App() {
   };
 
   const handleGenerate = async () => {
-    if (selectedInstructionIds.length === 0) { alert("Please select a component."); return; }
+    if (selectedInstructionIds.length === 0) { 
+      alert("Please select a component."); 
+      return; 
+    }
     setIsGenerating(true);
     const selectedTemps = instructionTemplates.filter(t => selectedInstructionIds.includes(t.id));
     const filterByCategory = (rules: StrictRule[]) => rules.filter(r => r.active && (r.category === 'General' || r.category.toLowerCase() === activeModule.toLowerCase()));
@@ -450,7 +595,9 @@ function App() {
     const selectedBlankStyle = '____________________';
     const protocolsPrompt = filteredProtocols.map(p => `[PROTOCOL - ${p.priority}]: ${p.promptInjection.replace(/{{BLANK}}/g, selectedBlankStyle)}`).join('\n');
     const rulesPrompt = filteredRules.map(r => `[STRICT RULE - ${r.priority}]: ${r.promptInjection.replace(/{{BLANK}}/g, selectedBlankStyle)}`).join('\n');
-    const strategyInstruction = answerStrategy === 'GENERAL_MIXED' ? `[STRATEGY]: GENERAL-MIXED. Context: {{TOPIC}}.` : `[STRATEGY]: TOPIC-FOCUSED. Context: {{TOPIC}}.`;
+    const strategyInstruction = answerStrategy === 'GENERAL_MIXED' 
+      ? `[STRATEGY]: GENERAL-MIXED. Context: {{TOPIC}}.` : `[STRATEGY]: TOPIC-FOCUSED. Context: {{TOPIC}}.`;
+
     const componentLogic = selectedTemps.map((t, idx) => {
       const overrideCol = columnOverrides[t.id] || 0;
       const overrideItems = itemCountOverrides[t.id] || 10;
@@ -459,9 +606,12 @@ function App() {
       const formatInstruction = overrideCol > 0 ? `(FORMAT: HTML <table> with ${overrideCol} columns.)` : '';
       return `PART ${String.fromCharCode(65 + idx)} [MANDATORY INSTRUCTION HEADER: ${t.label}]: ${t.prompt.replace(/{{BLANK}}/g, selectedBlankStyle)} (GENERATE EXACTLY ${overrideItems} ITEMS) (USE THIS ANSWER KEY: ${blueprintStr}) ${formatInstruction}`;
     }).join('\n\n');
+
     const moduleSafetyGuard = activeModule === 'Grammar' ? `[MODULE SAFETY GUARD]: GRAMMAR assessment focus.` : '';
     const mandatorySequence = `1. PRE-ASSIGN balanced answer keys.\n2. GENERATE PARTS for "${topic}".`;
+
     const finalLogic = `${moduleSafetyGuard}\n${GLOBAL_STRICT_COMMAND.replace(/{{TOPIC}}/g, topic || "General English")}\n${protocolsPrompt}\n${strategyInstruction.replace(/{{TOPIC}}/g, topic || "General English")}\n${rulesPrompt}\n[SYSTEM OBJECTIVE]: COMPLETE assessment.\n[TARGET]: "${topic}"\n[LEVEL]: ${activeLevel}\n### SEQUENCE ###\n${mandatorySequence}\n${componentLogic}`;
+
     try {
       const availableLogos = brandSettings.logos.filter(l => !!l);
       if (availableLogos.length > 0) {
@@ -470,19 +620,43 @@ function App() {
       }
       const result = await callNeuralEngine(activeEngine, finalLogic, protocolsPrompt, sourceMaterial, externalKeys);
       setWorksheetContent(result.text);
-      setIsGenerating(false); setViewMode('preview');
-      const newTestItem = { id: `hist-${Date.now()}`, title: `${activeLanguage} ${activeModule}: ${activeLevel} - ${topic || "Synthesis"}`, content: result.text, timestamp: Date.now(), module: activeModule, level: activeLevel, topic: topic, authorName: session?.name || 'Anonymous', authorEmail: session?.email || 'N/A' };
+      setIsGenerating(false);
+      setViewMode('preview');
+      const newTestItem = {
+        id: `hist-${Date.now()}`,
+        title: `${activeLanguage} ${activeModule}: ${activeLevel} - ${topic || "Synthesis"}`,
+        content: result.text,
+        timestamp: Date.now(),
+        module: activeModule,
+        level: activeLevel,
+        topic: topic,
+        authorName: session?.name || 'Anonymous',
+        authorEmail: session?.email || 'N/A'
+      };
       setHistory(prev => [newTestItem, ...prev].slice(0, 30));
       await addDoc(collection(db, 'generatedTests'), newTestItem);
-    } catch (error: any) { alert("Neural synthesis failed."); setIsGenerating(false); }
+    } catch (error: any) {
+      alert("Neural synthesis failed.");
+      setIsGenerating(false);
+    }
   };
 
   const handleAssistantMessage = async (msg: string, file?: QuickSource) => {
-    const userMsg: ChatMessage = { id: `msg-${Date.now()}`, role: 'user', text: msg, timestamp: Date.now() };
+    const userMsg: ChatMessage = { 
+      id: `msg-${Date.now()}`, 
+      role: 'user', 
+      text: msg, 
+      timestamp: Date.now() 
+    };
     setChatMessages(prev => [...prev, userMsg]);
     setIsGenerating(true);
     const result = await callNeuralEngine(activeEngine, msg, worksheetContent, file || sourceMaterial, externalKeys);
-    setChatMessages(prev => [...prev, { id: `msg-bot-${Date.now()}`, role: 'architect', text: "Synthesis updated.", timestamp: Date.now() }]);
+    setChatMessages(prev => [...prev, { 
+      id: `msg-bot-${Date.now()}`, 
+      role: 'architect', 
+      text: "Synthesis updated.", 
+      timestamp: Date.now() 
+    }]);
     setWorksheetContent(result.text);
     setIsGenerating(false);
   };
@@ -494,12 +668,30 @@ function App() {
     exportToWord(worksheetContent, `DPSS_Test`, header, '0.6cm');
   };
 
-  const updateRule = (id: string, updates: Partial<StrictRule>) => setStrictRules(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
-  const updateProtocol = (id: string, updates: Partial<StrictRule>) => setMasterProtocols(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
-  const updateTemplate = (id: string, updates: Partial<InstructionTemplate>) => setInstructionTemplates(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-  const deleteTemplate = (id: string) => setInstructionTemplates(prev => prev.filter(t => t.id !== id));
-  const deleteRule = (id: string) => setStrictRules(prev => prev.filter(r => r.id !== id));
-  const deleteProtocol = (id: string) => setMasterProtocols(prev => prev.filter(p => p.id !== id));
+  const updateRule = (id: string, updates: Partial<StrictRule>) => {
+    setStrictRules(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
+  };
+  
+  const updateProtocol = (id: string, updates: Partial<StrictRule>) => {
+    setMasterProtocols(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+  };
+  
+  const updateTemplate = (id: string, updates: Partial<InstructionTemplate>) => {
+    setInstructionTemplates(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+  };
+
+  const deleteTemplate = (id: string) => {
+    setInstructionTemplates(prev => prev.filter(t => t.id !== id));
+  };
+  
+  const deleteRule = (id: string) => {
+    setStrictRules(prev => prev.filter(r => r.id !== id));
+  };
+  
+  const deleteProtocol = (id: string) => {
+    setMasterProtocols(prev => prev.filter(p => p.id !== id));
+  };
+  
   const syncWithDefaults = () => {
     setMasterProtocols(prev => [...prev, ...DEFAULT_MASTER_PROTOCOLS.filter(p => !prev.some(x => x.id === p.id))]);
     setStrictRules(prev => [...prev, ...DEFAULT_STRICT_RULES.filter(r => !prev.some(x => x.id === r.id))]);
@@ -507,10 +699,57 @@ function App() {
     alert("Synchronized.");
   };
 
-  const hardReset = () => { if (confirm("Delete all?")) { localStorage.removeItem(MASTER_PROTOCOLS_KEY); localStorage.removeItem(STRICT_RULES_KEY); localStorage.removeItem(TEMPLATES_KEY); window.location.reload(); } };
-  const addRule = () => { const newRule: StrictRule = { id: `rule-${Date.now()}`, label: 'NEW LOGIC NODE', description: '', promptInjection: '', active: true, priority: 'Medium', category: activeLogicCategory }; setStrictRules([...strictRules, newRule]); setExpandedRuleId(newRule.id); };
-  const addProtocol = () => { const newProtocol: StrictRule = { id: `mp-${Date.now()}`, label: 'NEW PROTOCOL', description: '', promptInjection: '', active: true, priority: 'Medium', category: activeProtocolCategory }; setMasterProtocols([...masterProtocols, newProtocol]); setExpandedProtocolId(newProtocol.id); };
-  const addTemplate = () => { const newId = `temp-${Date.now()}`; setInstructionTemplates(prev => [...prev, { id: newId, label: `NEW PART`, prompt: `Detail logic...`, category: activeTemplateCategory as any, columnCount: 0 }]); setExpandedTemplateId(newId); };
+  const hardReset = () => {
+    if (confirm("Delete all? This action cannot be undone.")) {
+      localStorage.removeItem(MASTER_PROTOCOLS_KEY);
+      localStorage.removeItem(STRICT_RULES_KEY);
+      localStorage.removeItem(TEMPLATES_KEY);
+      window.location.reload();
+    }
+  };
+
+  const addRule = () => {
+    const newRule: StrictRule = { 
+      id: `rule-${Date.now()}`, 
+      label: 'NEW LOGIC NODE', 
+      description: '', 
+      promptInjection: '', 
+      active: true, 
+      priority: 'Medium', 
+      category: activeLogicCategory 
+    };
+    setStrictRules([...strictRules, newRule]); 
+    setExpandedRuleId(newRule.id);
+  };
+
+  const addProtocol = () => {
+    const newProtocol: StrictRule = { 
+      id: `mp-${Date.now()}`, 
+      label: 'NEW PROTOCOL', 
+      description: '', 
+      promptInjection: '', 
+      active: true, 
+      priority: 'Medium', 
+      category: activeProtocolCategory 
+    };
+    setMasterProtocols([...masterProtocols, newProtocol]); 
+    setExpandedProtocolId(newProtocol.id);
+  };
+
+  const addTemplate = () => {
+    const newId = `temp-${Date.now()}`;
+    setInstructionTemplates(prev => [
+      ...prev, 
+      { 
+        id: newId, 
+        label: `NEW PART`, 
+        prompt: `Detail logic...`, 
+        category: activeTemplateCategory as any, 
+        columnCount: 0 
+      }
+    ]);
+    setExpandedTemplateId(newId);
+  };
 
   if (!session) {
     return (
@@ -537,7 +776,11 @@ function App() {
           <aside className={`fixed inset-y-0 left-0 z-50 w-72 border-r border-[#1f2937] flex flex-col shrink-0 lg:relative lg:translate-x-0 lg:w-80 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-all duration-500`}>
             <div className="p-6 border-b border-[#1f2937] flex justify-between items-center"><h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500">History Log</h2><button onClick={() => setIsSidebarOpen(false)} className="lg:hidden h-8 w-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400"><i className="fa-solid fa-xmark"></i></button></div>
             <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-4">
-               {history.map(item => (<button key={item.id} onClick={() => { setWorksheetContent(item.content); setViewMode('preview'); }} className="w-full text-left p-4 rounded-2xl bg-[#111827] border border-[#1f2937] hover:border-orange-500/30 transition-all"><div className="text-[11px] font-bold text-slate-400 line-clamp-1">{item.title}</div></button>))}
+               {history.map(item => (
+                 <button key={item.id} onClick={() => { setWorksheetContent(item.content); setViewMode('preview'); }} className="w-full text-left p-4 rounded-2xl bg-[#111827] border border-[#1f2937] hover:border-orange-500/30 transition-all">
+                   <div className="text-[11px] font-bold text-slate-400 line-clamp-1">{item.title}</div>
+                 </button>
+               ))}
             </div>
               <div className="p-6 border-t border-[#1f2937] space-y-2">
               <button onClick={() => setShowSettings(true)} className="w-full flex items-center justify-between p-5 rounded-2xl bg-gradient-to-r from-accent-orange-dark to-accent-orange-light text-white shadow-lg uppercase text-[11px] font-black hover:brightness-110 transition-all"><span>Architect Settings</span><i className="fa-solid fa-gear"></i></button>
@@ -592,13 +835,23 @@ function App() {
               <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Grammar Architect</h2>
             </div>
             <div className="flex gap-2">
-              <a href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2">
+              <a 
+                href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
+              >
                 <i className="fa-solid fa-arrow-up-right-from-square"></i> Launch Tool
               </a>
             </div>
           </div>
           <div className="flex-1 bg-white overflow-hidden relative">
-            <iframe src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" className="w-full h-full min-h-[800px] border-none relative z-10" title="Grammar Tool" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+            <iframe 
+              src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true"
+              className="w-full h-full min-h-[800px] border-none relative z-10"
+              title="Grammar Tool"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            />
           </div>
         </section>
       )}
@@ -612,30 +865,10 @@ function App() {
               <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Book Architect</h2>
             </div>
             <div className="flex gap-2">
-              <a href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2">
-                <i className="fa-solid fa-arrow-up-right-from-square"></i> Launch Tool
-              </a>
-            </div>
-          </div>
-          <div className="flex-1 bg-white overflow-hidden relative">
-            <iframe src="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" className="w-full h-full min-h-[800px] border-none relative z-10" title="Book Creation Tool" />
-          </div>
-        </section>
-      )}
-      {!showSettings && (<button onClick={() => setIsAssistantVisible(!isAssistantVisible)} className={`fixed bottom-6 right-6 h-16 w-16 rounded-full flex items-center justify-center text-white shadow-2xl transition-all ${isAssistantVisible ? 'bg-orange-600 rotate-90' : 'bg-slate-800'}`}><i className={`fa-solid ${isAssistantVisible ? 'fa-xmark' : 'fa-wand-magic-sparkles text-xl'}`}></i></button>)}
-      {showSettings && (
-        <div className="fixed inset-0 z-[250] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-4">
-          <div className="bg-[#f8fafc] rounded-[48px] w-full max-w-7xl h-full max-h-[95vh] overflow-hidden shadow-2xl flex flex-col border border-white/50">
-             <div className="p-8 pb-4 flex justify-between items-center"><h2 className="text-[12px] font-black uppercase text-slate-900 tracking-widest">Workspace Control</h2><button onClick={() => setShowSettings(false)} className="h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900"><i className="fa-solid fa-xmark text-xl"></i></button></div>
-             <div className="p-12 bg-slate-50 border-t border-slate-100 flex justify-end gap-4">
-                <button onClick={hardReset} className="px-16 py-6 bg-rose-600 text-white rounded-full text-[12px] font-black uppercase shadow-xl hover:bg-rose-700 transition-all">Hard Reset</button>
-                <button onClick={() => setShowSettings(false)} className="px-16 py-6 bg-gradient-to-r from-accent-orange-dark to-accent-orange-light text-white rounded-full text-[12px] font-black uppercase shadow-xl hover:brightness-110 transition-all">Close Panel</button>
-              </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default App;
+              <a 
+                href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
+              >
+                <i className="f
