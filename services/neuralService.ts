@@ -57,7 +57,7 @@ export const callNeuralEngine = async (
   userKeys: ExternalKeys = {}
 ): Promise<NeuralResult> => {
   
-  if (engine === NeuralEngine.GEMINI_3_FLASH || engine === NeuralEngine.GEMINI_3_PRO) {
+ modelName = "gemini-1.5-flash";
     if (API_KEYS.length === 0) {
         return { text: `<div class="p-6 bg-red-50 text-red-600 rounded-xl">Error: No API keys found in environment.</div>` };
     }
