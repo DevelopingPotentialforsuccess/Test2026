@@ -1,3 +1,4 @@
+
 import {
   NeuralEngine,
   AcademicLevel,
@@ -569,7 +570,7 @@ function App() {
       // ONLY add table instruction if columns are explicitly requested (> 0)
       const formatInstruction = overrideCol > 0 
         ? `(FORMAT: HTML <table> with ${overrideCol} columns. Ensure items are distributed evenly.)` 
-        : `(FORMAT: Standard numbered list. DO NOT use tables or columns.)`;
+
         
       return `PART ${String.fromCharCode(65 + idx)} [MANDATORY INSTRUCTION HEADER: ${t.label}]: ${t.prompt.replace(/{{BLANK}}/g, selectedBlankStyle)} (GENERATE EXACTLY ${overrideItems} ITEMS) (USE THIS ANSWER KEY: ${blueprintStr}) ${formatInstruction}`;
     }).join('\n\n');
@@ -609,7 +610,7 @@ ${mandatorySequence}
 
 ${componentLogic}
     `;
-    
+    }, [viewMode]);
     try {
       // Randomize logo from available logos
       const availableLogos = brandSettings.logos.filter(l => !!l);
