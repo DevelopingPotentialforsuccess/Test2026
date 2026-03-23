@@ -178,6 +178,9 @@ function App() {
   });
 
   const [selectedInstructionIds, setSelectedInstructionIds] = useState<string[]>([]);
+  const [columnOverrides] = useState<Record<string, number>>({});
+  const [itemCountOverrides] = useState<Record<string, number>>({});
+  const [sourceMaterial] = useState<QuickSource | null>(null);
   const [loginName, setLoginName] = useState('');
   const [loginCode, setLoginCode] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -201,35 +204,25 @@ function App() {
     document.body.style.backgroundColor = theme.bg;
   }, [activeThemeId]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    // This regex removes ALL spaces and hidden characters
+    const cleanCode = loginCode.toLowerCase().replace(/\s/g, '');
     
-    // Improved sanitization: remove whitespace and convert to lowercase
-    const sanitizedCode = loginCode.trim().toLowerCase();
-    const sanitizedName = loginName.trim();
-
-    if (!sanitizedName) {
-      setLoginError('Please enter your full name.');
-      return;
-    }
-
-    const allowedCodes = ['virtues', 'gratitude', 'dpss'];
-
-    if (allowedCodes.includes(sanitizedCode)) {
-      const email = `${sanitizedName.toLowerCase().replace(/\s+/g, '_')}@local.dpss`;
-      const s = { name: sanitizedName, code: sanitizedCode, loginTime: Date.now(), email };
+    if (['virtues', 'gratitude', 'dpss'].includes(cleanCode)) {
+      const email = `${loginName.toLowerCase().replace(/\s+/g, '_')}@local.dpss`;
+      const s = { name: loginName, code: cleanCode, loginTime: Date.now(), email };
       setSession(s);
       localStorage.setItem(USER_SESSION_KEY, JSON.stringify(s));
-      setLoginError('');
-    } else {
-      setLoginError('Invalid Access Code.');
+    } else { 
+      setLoginError('Invalid Access Code.'); 
     }
   };
 
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
-      const result = await callNeuralEngine(activeEngine, topic, "Protocol", null, externalKeys);
+      const result = await callNeuralEngine(activeEngine, topic, "Protocol", sourceMaterial, externalKeys);
       setWorksheetContent(result.text);
       setViewMode('preview');
     } catch (e) { alert("Failed."); } finally { setIsGenerating(false); }
@@ -301,6 +294,15 @@ function App() {
             <a href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87" target="_blank" rel="noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest">Launch Tool</a>
           </div>
           <iframe src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true" className="w-full h-full border-none" title="Grammar" />
+        </section>
+      )}
+      {viewMode === 'book_creation' && (
+        <section className="flex-1 flex flex-col overflow-hidden">
+          <div className="p-6 border-b border-[#1f2937] flex justify-between items-center bg-[#0b1221]">
+            <button onClick={() => setViewMode('generator')} className="text-white px-8 py-3 rounded-full text-[11px] font-black uppercase border border-white/10">Architect</button>
+            <a href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" target="_blank" rel="noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase">Launch Tool</a>
+          </div>
+          <iframe src="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" className="w-full h-full border-none" title="Book" />
         </section>
       )}
       <button onClick={() => setIsAssistantVisible(!isAssistantVisible)} className="fixed bottom-6 right-6 h-16 w-16 rounded-full flex items-center justify-center text-white bg-slate-800 shadow-2xl transition-all">
