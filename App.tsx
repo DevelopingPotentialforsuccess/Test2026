@@ -206,12 +206,12 @@ function App() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // This regex removes ALL spaces and hidden characters
-    const cleanCode = loginCode.toLowerCase().replace(/\s/g, '');
+    // Sanitizes code: lowercase and removes ALL types of whitespace
+    const sanitizedCode = loginCode.toLowerCase().trim().replace(/\s+/g, '');
     
-    if (['virtues', 'gratitude', 'dpss'].includes(cleanCode)) {
+    if (['virtues', 'gratitude', 'dpss'].includes(sanitizedCode)) {
       const email = `${loginName.toLowerCase().replace(/\s+/g, '_')}@local.dpss`;
-      const s = { name: loginName, code: cleanCode, loginTime: Date.now(), email };
+      const s = { name: loginName, code: sanitizedCode, loginTime: Date.now(), email };
       setSession(s);
       localStorage.setItem(USER_SESSION_KEY, JSON.stringify(s));
     } else { 
@@ -323,4 +323,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
