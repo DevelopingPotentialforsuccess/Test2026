@@ -16,6 +16,7 @@ import {
   ChatMessage,
   AnswerStrategy
 } from './types';
+
 import {
   INITIAL_MODULES,
   LANGUAGES,
@@ -28,18 +29,15 @@ import {
 } from './constants';
 
 import { db } from './firebase';
-import { 
-  collection, 
-  addDoc, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  query, 
-  where, 
-  getDocs, 
-  orderBy, 
-  limit 
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  query,
+  where,
+  getDocs,
+  limit
 } from 'firebase/firestore';
 
 import { callNeuralEngine } from './services/neuralService';
@@ -70,15 +68,23 @@ const ENGINE_CONFIG_KEY = 'dp_engine_config_v46';
 const ONBOARDING_KEY = 'dp_onboarding_v1';
 const TEMPLATES_KEY = 'dp_templates_v46';
 
-function App() {
-  const [session, setSession] = useState<UserSession | null>(() => {
-    try {
-      const saved = localStorage.getItem(USER_SESSION_KEY);
-      return saved ? JSON.parse(saved) : null;
-    } catch { return null; }
-  });
+const safeParse = (key: string, fallback: any) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+};
 
-  const [viewMode, setViewMode] = useState<'generator' | 'preview' | 'book_creation' | 'ielts_master' | 'dpss_studio' | 'grammar_iframe'>('grammar_iframe');
+function App() {
+  const [session, setSession] = useState<UserSession | null>(() =>
+    safeParse(USER_SESSION_KEY, null)
+  );
+
+  const email = session?.email;
+
+  const [viewMode, setViewMode] = useState<any>('grammar_iframe');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAssistantVisible, setIsAssistantVisible] = useState(false);
   const [activeModule, setActiveModule] = useState<string>('Grammar');
@@ -88,34 +94,24 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [worksheetContent, setWorksheetContent] = useState<string>('');
   const [showSettings, setShowSettings] = useState(false);
-  
-  const [activeThemeId, setActiveThemeId] = useState<string>(() => {
-    try {
-      const saved = localStorage.getItem('dp_theme_v30');
-      return saved || 'default';
-    } catch { return 'default'; }
-  });
+
+  const [activeThemeId, setActiveThemeId] = useState<string>(() =>
+    localStorage.getItem('dp_theme_v30') || 'default'
+  );
 
   const [activeEngine, setActiveEngine] = useState<NeuralEngine>(() => {
-    try {
-      const saved = localStorage.getItem(ENGINE_CONFIG_KEY);
-      return saved ? JSON.parse(saved).active : NeuralEngine.GEMINI_3_FLASH;
-    } catch { return NeuralEngine.GEMINI_3_FLASH; }
+    const saved = safeParse(ENGINE_CONFIG_KEY, null);
+    return saved?.active || NeuralEngine.GEMINI_3_FLASH;
   });
 
   const [externalKeys, setExternalKeys] = useState<ExternalKeys>(() => {
-    try {
-      const saved = localStorage.getItem(ENGINE_CONFIG_KEY);
-      return saved ? JSON.parse(saved).keys : {};
-    } catch { return {}; }
+    const saved = safeParse(ENGINE_CONFIG_KEY, null);
+    return saved?.keys || {};
   });
-  
-  const [brandSettings, setBrandSettings] = useState<BrandSettings>(() => {
-    try {
-      const saved = localStorage.getItem(BRAND_SETTINGS_KEY);
-      return saved ? JSON.parse(saved) : DEFAULT_BRAND_SETTINGS;
-    } catch { return DEFAULT_BRAND_SETTINGS; }
-  });
+
+  const [brandSettings, setBrandSettings] = useState<BrandSettings>(() =>
+    safeParse(BRAND_SETTINGS_KEY, DEFAULT_BRAND_SETTINGS)
+  );
 
   const [isBrandLoaded, setIsBrandLoaded] = useState(false);
   const loadedEmailRef = useRef<string | null>(null);
@@ -123,110 +119,119 @@ function App() {
   useEffect(() => {
     const fetchBrand = async () => {
       setIsBrandLoaded(false);
-      if (session?.email) {
+      if (email) {
         try {
-          const docSnap = await getDoc(doc(db, 'user_settings', session.email));
+          const docSnap = await getDoc(doc(db, 'user_settings', email));
           if (docSnap.exists() && docSnap.data().brandSettings) {
             setBrandSettings(docSnap.data().brandSettings);
           }
-          loadedEmailRef.current = session.email;
-        } catch (e) { 
-          console.error("Firestore failed:", e); 
-        } finally { 
-          setIsBrandLoaded(true); 
+          loadedEmailRef.current = email;
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setIsBrandLoaded(true);
         }
-      } else { setIsBrandLoaded(true); }
+      } else {
+        setIsBrandLoaded(true);
+      }
     };
     fetchBrand();
-  }, [session?.email]);
+  }, [email]);
 
-  const [history, setHistory] = useState<HistoryItem[]>(() => {
-    try {
-      const saved = localStorage.getItem(HISTORY_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
-  });
+  const [history, setHistory] = useState<HistoryItem[]>(() =>
+    safeParse(HISTORY_KEY, [])
+  );
 
   useEffect(() => {
-    if (session?.email) {
-      const fetchHistory = async () => {
-        try {
-          const q = query(collection(db, 'generatedTests'), where('authorEmail', '==', session.email), orderBy('timestamp', 'desc'), limit(30));
-          const snap = await getDocs(q);
-          const h: HistoryItem[] = [];
-          snap.forEach((d) => h.push(d.data() as HistoryItem));
-          if (h.length > 0) setHistory(h);
-        } catch (e) { 
-          console.error("History fetch failed:", e); 
-        }
-      };
-      fetchHistory();
-    }
-  }, [session?.email]);
+    if (!email) return;
 
-  const [masterProtocols, setMasterProtocols] = useState<StrictRule[]>(() => {
-    try {
-      const saved = localStorage.getItem(MASTER_PROTOCOLS_KEY);
-      return saved ? JSON.parse(saved) : DEFAULT_MASTER_PROTOCOLS;
-    } catch { return DEFAULT_MASTER_PROTOCOLS; }
-  });
+    const fetchHistory = async () => {
+      try {
+        const q = query(
+          collection(db, 'generatedTests'),
+          where('authorEmail', '==', email),
+          limit(30)
+        );
 
-  const [strictRules, setStrictRules] = useState<StrictRule[]>(() => {
-    try {
-      const saved = localStorage.getItem(STRICT_RULES_KEY);
-      return saved ? JSON.parse(saved) : DEFAULT_STRICT_RULES;
-    } catch { return DEFAULT_STRICT_RULES; }
-  });
+        const snap = await getDocs(q);
+        const h: HistoryItem[] = [];
 
-  const [instructionTemplates, setInstructionTemplates] = useState<InstructionTemplate[]>(() => {
-    try {
-      const saved = localStorage.getItem(TEMPLATES_KEY);
-      return saved ? JSON.parse(saved) : INITIAL_TEMPLATES;
-    } catch { return INITIAL_TEMPLATES; }
-  });
+        snap.forEach((d) => h.push(d.data() as HistoryItem));
 
-  const [selectedInstructionIds, setSelectedInstructionIds] = useState<string[]>([]);
-  const [columnOverrides] = useState<Record<string, number>>({});
-  const [itemCountOverrides] = useState<Record<string, number>>({});
-  const [sourceMaterial] = useState<QuickSource | null>(null);
+        h.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        setHistory(h);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchHistory();
+  }, [email]);
+
+  const [masterProtocols, setMasterProtocols] = useState<StrictRule[]>(() =>
+    safeParse(MASTER_PROTOCOLS_KEY, DEFAULT_MASTER_PROTOCOLS)
+  );
+
+  const [strictRules, setStrictRules] = useState<StrictRule[]>(() =>
+    safeParse(STRICT_RULES_KEY, DEFAULT_STRICT_RULES)
+  );
+
+  const [instructionTemplates, setInstructionTemplates] = useState<InstructionTemplate[]>(() =>
+    safeParse(TEMPLATES_KEY, INITIAL_TEMPLATES)
+  );
 
   const [loginName, setLoginName] = useState('');
   const [loginCode, setLoginCode] = useState('');
   const [loginError, setLoginError] = useState('');
-  const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem(ONBOARDING_KEY) !== 'completed');
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => localStorage.getItem(ONBOARDING_KEY) !== 'completed'
+  );
 
-  useEffect(() => { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }, [history]);
-  useEffect(() => { localStorage.setItem(TEMPLATES_KEY, JSON.stringify(instructionTemplates)); }, [instructionTemplates]);
-  useEffect(() => { localStorage.setItem(STRICT_RULES_KEY, JSON.stringify(strictRules)); }, [strictRules]);
-  useEffect(() => { localStorage.setItem(MASTER_PROTOCOLS_KEY, JSON.stringify(masterProtocols)); }, [masterProtocols]);
+  useEffect(() => {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }, [history]);
 
-  useEffect(() => { 
-    localStorage.setItem(BRAND_SETTINGS_KEY, JSON.stringify(brandSettings)); 
-    if (session?.email && isBrandLoaded && loadedEmailRef.current === session.email) {
-      setDoc(doc(db, 'user_settings', session.email), { brandSettings }, { merge: true })
-        .catch((e) => console.error("Save failed:", e));
+  useEffect(() => {
+    localStorage.setItem(TEMPLATES_KEY, JSON.stringify(instructionTemplates));
+  }, [instructionTemplates]);
+
+  useEffect(() => {
+    localStorage.setItem(STRICT_RULES_KEY, JSON.stringify(strictRules));
+  }, [strictRules]);
+
+  useEffect(() => {
+    localStorage.setItem(MASTER_PROTOCOLS_KEY, JSON.stringify(masterProtocols));
+  }, [masterProtocols]);
+
+  useEffect(() => {
+    localStorage.setItem(BRAND_SETTINGS_KEY, JSON.stringify(brandSettings));
+
+    if (email && isBrandLoaded && loadedEmailRef.current === email) {
+      setDoc(doc(db, 'user_settings', email), { brandSettings }, { merge: true })
+        .catch(console.error);
     }
-  }, [brandSettings, session?.email, isBrandLoaded]);
+  }, [brandSettings, email, isBrandLoaded]);
 
-  useEffect(() => { 
-    const theme = THEMES.find(t => t.id === activeThemeId) || THEMES[0];
+  useEffect(() => {
+    const theme = THEMES.find(t => t.id === activeThemeId) || THEMES?.[0] || { color: '#f97316', bg: '#0b1221' };
     document.documentElement.style.setProperty('--primary-orange', theme.color);
     document.body.style.backgroundColor = theme.bg;
   }, [activeThemeId]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: any) => {
     e.preventDefault();
 
     if (loginCode.toLowerCase().trim() === 'dpss') {
       const email = `${loginName.toLowerCase().replace(/\s+/g, '_')}@local.dpss`;
-      
+
       const s = {
         name: loginName,
         code: loginCode,
         loginTime: Date.now(),
         email
       };
-      
+
       setSession(s);
       localStorage.setItem(USER_SESSION_KEY, JSON.stringify(s));
     } else {
@@ -235,12 +240,32 @@ function App() {
   };
 
   const handleGenerate = async () => {
+    if (!topic.trim()) {
+      alert("Enter topic");
+      return;
+    }
+
     setIsGenerating(true);
+
     try {
-      const result = await callNeuralEngine(activeEngine, topic, "Protocol", sourceMaterial, externalKeys);
+      const result = await callNeuralEngine(
+        activeEngine,
+        topic,
+        "Protocol",
+        null,
+        externalKeys
+      );
+
+      if (!result || !result.text) throw new Error("Bad response");
+
       setWorksheetContent(result.text);
       setViewMode('preview');
-    } catch (e) { alert("Failed."); } finally { setIsGenerating(false); }
+    } catch (e) {
+      console.error(e);
+      alert("Generation failed");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleExportWord = () => {
@@ -248,89 +273,59 @@ function App() {
     exportToWord(worksheetContent, `Test`, header, '0.6cm');
   };
 
-  const hardReset = () => { if (confirm("Reset?")) { localStorage.clear(); window.location.reload(); } };
+  const hardReset = () => {
+    if (confirm("Reset?")) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
 
   if (!session) {
     return (
-      <div className="h-screen w-screen bg-[#0b1221] flex items-center justify-center p-6 text-white">
-        <div className="w-full max-w-xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-[64px] p-12 text-center">
-           <h1 className="text-2xl font-black mb-8 uppercase">DPSS Architect Login</h1>
-           <form onSubmit={handleLogin} className="space-y-6">
-              <input type="text" value={loginName} onChange={(e) => setLoginName(e.target.value)} placeholder="Full Name" className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-orange-500 font-bold" />
-              <input type="password" value={loginCode} onChange={(e) => setLoginCode(e.target.value)} placeholder="Access Code" className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-orange-500 font-bold" />
-              {loginError && <p className="text-rose-500 text-xs font-black uppercase">{loginError}</p>}
-              <button type="submit" className="w-full bg-orange-600 text-white py-6 rounded-3xl font-black uppercase hover:brightness-110">Synchronize</button>
-           </form>
-        </div>
+      <div className="h-screen flex items-center justify-center text-white">
+        <form onSubmit={handleLogin}>
+          <input value={loginName} onChange={e => setLoginName(e.target.value)} placeholder="Name" />
+          <input value={loginCode} onChange={e => setLoginCode(e.target.value)} placeholder="Code" />
+          <button type="submit">Login</button>
+          {loginError}
+        </form>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden text-slate-300 relative transition-all duration-500">
-      {showOnboarding && <OnboardingTutorial onComplete={() => { setShowOnboarding(false); localStorage.setItem(ONBOARDING_KEY, 'completed'); }} />}
-      {viewMode === 'generator' && (
-        <>
-          <aside className={`fixed inset-y-0 left-0 z-50 w-72 border-r border-[#1f2937] flex flex-col lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-all duration-500`}>
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-               {history.map(item => (<button key={item.id} onClick={() => { setWorksheetContent(item.content); setViewMode('preview'); }} className="w-full text-left p-4 rounded-2xl bg-[#111827] border border-[#1f2937]"><div className="text-[11px] font-bold text-slate-400 line-clamp-1">{item.title}</div></button>))}
-            </div>
-            <div className="p-6 border-t border-[#1f2937] space-y-2">
-              <button onClick={() => setShowSettings(true)} className="w-full p-5 rounded-2xl bg-orange-600 text-white font-black uppercase text-[11px]">Architect Settings</button>
-              <button onClick={() => { setSession(null); localStorage.removeItem(USER_SESSION_KEY); }} className="w-full p-4 text-slate-500 text-[9px] font-black uppercase">Logout</button>
-            </div>
-          </aside>
-          <main className="flex-1 border-r border-[#1f2937] flex flex-col overflow-y-auto p-10">
-            <div className="max-w-5xl mx-auto w-full space-y-12">
-               <div><h1 className="text-3xl font-black uppercase text-white">DPSS Ultimate Test Builder</h1><span className="text-orange-500 text-[9px] font-black uppercase tracking-widest block">Architect: {session.name}</span></div>
-               <div className="flex bg-[#111827] p-2 rounded-2xl gap-1">
-                 {INITIAL_MODULES.map(mod => (<button key={mod} onClick={() => { setActiveModule(mod); mod === 'Grammar' ? setViewMode('grammar_iframe') : setViewMode('generator'); }} className={`flex-1 py-4 rounded-xl text-[11px] font-black uppercase ${activeModule === mod ? 'bg-blue-600 text-white' : 'text-slate-600'}`}>{mod}</button>))}
-               </div>
-               <textarea value={topic} onChange={e => setTopic(e.target.value)} placeholder="Target Topic..." className="w-full h-40 bg-[#111827] border border-[#1f2937] rounded-[40px] p-6 text-white outline-none focus:border-orange-500/50 resize-none font-medium" />
-               <button onClick={handleGenerate} className="w-full bg-orange-600 text-white py-8 rounded-[40px] text-xl font-black uppercase shadow-2xl hover:brightness-110">{isGenerating ? 'Synthesizing...' : 'Synthesize Full Test'}</button>
-            </div>
-          </main>
-        </>
-      )}
+    <div className="flex h-screen">
       {viewMode === 'preview' && (
-        <section className="flex-1 flex flex-col overflow-hidden">
-          <div className="p-4 border-b border-[#1f2937] flex justify-between items-center bg-[#0b1221]">
-            <button onClick={() => setViewMode('generator')} className="text-white px-8 py-3 rounded-full text-[11px] font-black uppercase border border-white/10">Architect</button>
-            <button onClick={handleExportWord} className="px-10 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase">Export DOC</button>
-          </div>
-          <div className="flex-1 overflow-y-auto"><Worksheet content={worksheetContent} onContentChange={setWorksheetContent} isGenerating={isGenerating} theme={THEMES[0]} paperType="Plain" brandSettings={brandSettings} level={activeLevel} module={activeModule} topic={topic} /></div>
-        </section>
+        <div className="flex-1">
+          <button onClick={() => setViewMode('generator')}>Back</button>
+          <button onClick={handleExportWord}>Export</button>
+          <Worksheet
+            content={worksheetContent}
+            onContentChange={setWorksheetContent}
+            isGenerating={isGenerating}
+            theme={THEMES?.[0] || {}}
+            paperType="Plain"
+            brandSettings={brandSettings}
+            level={activeLevel}
+            module={activeModule}
+            topic={topic}
+          />
+        </div>
       )}
-      {viewMode === 'grammar_iframe' && (
-        <section className="flex-1 flex flex-col overflow-hidden">
-          <div className="p-6 border-b border-[#1f2937] flex justify-between items-center bg-[#0b1221]">
-            <button onClick={() => setViewMode('generator')} className="text-white px-8 py-3 rounded-full text-[11px] font-black uppercase border border-white/10">Architect</button>
-            <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Grammar Architect</h2>
-            <a href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87" target="_blank" rel="noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest">Launch Tool</a>
-          </div>
-          <iframe src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true" className="w-full h-full border-none" title="Grammar" />
-        </section>
-      )}
-      {viewMode === 'book_creation' && (
-        <section className="flex-1 flex flex-col overflow-hidden">
-          <div className="p-6 border-b border-[#1f2937] flex justify-between items-center bg-[#0b1221]">
-            <button onClick={() => setViewMode('generator')} className="text-white px-8 py-3 rounded-full text-[11px] font-black uppercase border border-white/10">Architect</button>
-            <a href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" target="_blank" rel="noreferrer" className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase">Launch Tool</a>
-          </div>
-          <iframe src="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" className="w-full h-full border-none" title="Book" />
-        </section>
-      )}
-      <button onClick={() => setIsAssistantVisible(!isAssistantVisible)} className="fixed bottom-6 right-6 h-16 w-16 rounded-full flex items-center justify-center text-white bg-slate-800 shadow-2xl transition-all"><i className={`fa-solid ${isAssistantVisible ? 'fa-xmark' : 'fa-wand-magic-sparkles text-xl'}`}></i></button>
-      {showSettings && (
-        <div className="fixed inset-0 z-[250] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-4">
-          <div className="bg-[#f8fafc] rounded-[48px] w-full max-w-7xl h-full max-h-[95vh] flex flex-col overflow-hidden border border-white/50 text-slate-900">
-             <div className="p-8 flex justify-between items-center"><h2 className="text-[12px] font-black uppercase tracking-widest">Workspace Control</h2><button onClick={() => setShowSettings(false)} className="h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center"><i className="fa-solid fa-xmark"></i></button></div>
-             <div className="flex-1 p-12"><p className="font-bold">Settings Panel Active</p></div>
-             <div className="p-12 bg-slate-50 border-t flex justify-end gap-4">
-                <button onClick={hardReset} className="px-16 py-6 bg-rose-600 text-white rounded-full text-[12px] font-black uppercase">Hard Reset</button>
-                <button onClick={() => setShowSettings(false)} className="px-16 py-6 bg-orange-600 text-white rounded-full text-[12px] font-black uppercase">Close Panel</button>
-              </div>
-          </div>
+
+      {viewMode !== 'preview' && (
+        <div className="flex-1 p-10">
+          <textarea value={topic} onChange={e => setTopic(e.target.value)} />
+          <button onClick={handleGenerate}>
+            {isGenerating ? 'Loading...' : 'Generate'}
+          </button>
+
+          <a
+            href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87"
+            target="_blank"
+          >
+            Open Grammar Tool
+          </a>
         </div>
       )}
     </div>
