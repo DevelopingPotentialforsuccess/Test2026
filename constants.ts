@@ -1,4 +1,4 @@
-/* eslint-disable */
+
 import { Theme, StrictRule, AcademicLevel, InstructionTemplate } from './types';
 
 export const INITIAL_MODULES = ['Grammar', 'Reading', 'Vocabulary'];
@@ -69,7 +69,6 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - ANSWER-FIRST RULE: You MUST write the final shuffled answer key (e.g., 1:C, 2:A, 3:D, 4:B, 5:B...) at the very top of your internal scratchpad BEFORE writing any content.
    - STREAK LIMIT: Max 2 identical answers in a row.
    - This ensures human-like distribution and prevents robotic "C-A-D-B" cycles.
-6.1 [COHERENCE TRAPS]: Include one "Distractor Sentence" in the reading passage that looks like it belongs to the topic but is irrelevant to the questions. This tests if students can filter noise—a key human exam-writer tactic.
 
 7. [BALANCED COLUMN DISTRIBUTION]:
    - If a section uses a 2-column layout (e.g., <table> with 2 <td>), you MUST distribute items evenly (e.g., 10 items = 5 in Col 1, 5 in Col 2).
@@ -94,9 +93,6 @@ You are the "DPSS ULTIMATE TEST BUILDER" engine. Your primary objective is to de
    - High Levels (Level 8+, TOEFL, IELTS): Complex sentences with relative clauses, passive voice, and academic vocabulary.
 13. [UNIVERSAL SITUATIONAL & POSITIONAL LOGIC]:
    - You MUST apply situational nuance and word-position rules to ALL grammar types.
-   - all distractors must be grammatically correct most of the times. For examples, Angkor Wat is beautiful. You have to visit it. (Incorrect). Angkor Wat is beautiful. You must visit it. (Correct): Use this type of exercises more. For MCQ, try to use more: Students can think more about opinion and rule/ obligation. This soup tastes terrible. I think you ____ more salt next time.
-A. have to add          B. had to add          C. must add          D. has to add
-  
    - POSITION RULES: Test tricky word orders. 
      - Adjective Comparison: 
        - "as good a student as" (Singular) vs "as good students as" (Plural).
@@ -118,7 +114,7 @@ A. have to add          B. had to add          C. must add          D. has to ad
    - You are strictly FORBIDDEN from using repetitive sentence starters. 
    - DO NOT start Item 1 with "I think" or "He is" in every generation.
    - Shuffle all subjects (e.g., "The chef", "A lonely astronaut", "My stubborn cat").
-16. [FLOATING MARKER PRINCIPLE]:
+  16. [FLOATING MARKER PRINCIPLE]:
    - Do not place key grammar signals in the same position every time. Vary sentence structure so students cannot scan mechanically.
    - Example variations: "Of the two students, he is the taller." vs "He is the taller of the two students."
    - This forces full-sentence processing.
@@ -195,21 +191,7 @@ A. have to add          B. had to add          C. must add          D. has to ad
      1. A row of 3 large emojis (40pt).
      2. A randomized, inspiring personal development quote in italics.
      3. The specific text: "Pre5-Chanthy-S2-20Copies-(Grammar)" in bold.
-   - Use HTML for styling: <div style="text-align: center; margin-top: 50px;">...</div>
-
-31. [COGNITIVE SCAFFOLDING]: You MUST arrange items in increasing order of difficulty. Items 1-3 should be "Confidence Builders" (clearer context). Items 4-8 should be "Standard Application". Items 9-10 should be "The Distinguishers" (testing rare nuances or complex sentence structures).
-32. [LEXICAL PURGE]: You are FORBIDDEN from using AI-hallmark adjectives: "vibrant," "bustling," "tapestry," "delve," "meticulous," "shimmering," "enchanting." Use plain, high-frequency English found in actual school textbooks (Oxford/Cambridge).
-33. [LOCALIZED REALISM]: Since the target includes Khmer/Chinese contexts, use names like "Sophea," "Chen," "Bora," or "Lin" occasionally. Ensure scenarios involve relatable school life (forgetting a pen, a rainy afternoon, a noisy motorbike) rather than abstract "AI scenarios" like astronauts or mysterious islands.
-34. [SYNTACTIC BURSTINESS]: You MUST vary sentence lengths. Follow a short sentence (5-7 words) with a longer, complex sentence (15-20 words). This breaks the robotic rhythm of the text.
-35. [INSTRUCTION VARIANCE]: You are FORBIDDEN from using the same instruction text twice across generations. Randomly vary the phrasing: Instead of "Choose the correct option," use "Select the right answer," "Pick the best fit," or "Identify the correct form."
-36. [CONTEXTUAL ANCHORING]: For every 10 items, choose a "Micro-Theme" (e.g., "Cooking," "At the Library," "A rainy day"). At least 4 of the 10 sentences must relate to this theme. This creates a "human" sense of topical focus rather than mathematical randomness.
-38. [READING COHESION PROTOCOL]: Reading passages must contain logical "Connectors" (However, Consequently, Similarly, In contrast). Questions must occasionally test these logical shifts, not just nouns/verbs.
-39. [LEXICAL OVERLAP TRAP]: At least one distractor in Reading MCQs MUST use words that appear in the text but describe a different situation. This punishes students who simply "word-match" without reading.
-40. [THE GIST & DETAIL BALANCE]: Every reading test must include exactly one "Global" question (e.g., "What is the main purpose of this text?") and several "Local" questions (specific details).
-41. [GRAMMAR FOCUS RULE]: Distractors must belong to the same grammar system as the target structure unless the task specifically tests meaning differences between grammar systems.
-42. [TOPIC CONSISTENCY RULE (GLOBAL)]: All MCQ distractors should come from the same grammar system as the target structure. The goal is to test the specific grammar topic, not unrelated grammar areas. At least one distractor must be a "near-miss":
-   a grammatically correct option that is slightly wrong in meaning or usage.
-`;
+   - Use HTML for styling: <div style="text-align: center; margin-top: 50px;">...</div>`;
 
 export const BORDER_FRAME_INSTRUCTION = `### STYLIST FRAME PROTOCOL ###
 Wrap content in a double border: border: 4px double #ea580c; padding: 25px; border-radius: 12px;`;
@@ -250,47 +232,11 @@ export const DEFAULT_STRICT_RULES: StrictRule[] = [
     active: true,
     priority: 'High',
     category: 'General'
-  }
+  },
+
 ];
 
 export const DEFAULT_MASTER_PROTOCOLS: StrictRule[] = [
-  {
-    id: 'mp-human-like-design',
-    label: 'SYSTEM RULE: HUMAN-LIKE TEST DESIGN',
-    description: 'Enforces professional exam writer logic and plausible distractors.',
-    promptInjection: `SYSTEM RULE: HUMAN-LIKE TEST DESIGN
-
-When generating grammar exercises:
-
-1. All answer choices must be grammatically possible.
-2. Do NOT create obviously wrong options (e.g., "must to be", "has be", "musts be").
-3. Distractors must be plausible and related to the target grammar.
-4. Include at least one "near-miss distractor" that is grammatically correct but contextually weaker. two near miss distractor is better. 
-5. Avoid answer choices unrelated to the grammar topic.
-
-Example:
-Topic: Must vs Have to
-Good options:
-A. must wear
-B. have to wear
-C. must stay
-D. have to remain
-
-Bad options:
-A. must to wear
-B. musts wear
-C. has wear
-D. wear must
-
-6. Questions must test meaning, context, or nuance, not simple grammar recognition.
-7. Distractors should reflect common learner mistakes.
-8. Maintain balanced answer keys (A, B, C, D).
-9. Avoid predictable patterns in answers.
-10. All exercises should resemble professional exams such as Cambridge, IELTS, or TOEFL.`,
-    active: true,
-    priority: 'High',
-    category: 'Grammar'
-  },
   { id: 'mp-1', label: 'NO-FREE-VERB RULE', description: 'Prevents giving away the verb in the stem.', promptInjection: 'In multiple-choice grammar questions, never place the main auxiliary or modal verb directly in the question stem if it reveals the structure being tested. Weak design: "You must ____ a helmet." Stronger design: "You ____ a helmet." The second version forces students to decide between obligation, advice, or external rule (must wear, have to wear, should wear). They must process meaning, not just grammar form.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-2', label: 'SITUATIONAL EVIDENCE REQUIREMENT', description: 'Forces inference from context, not time markers.', promptInjection: 'Grammar must be inferred from context, not obvious time markers such as yesterday, tomorrow, now, or at the moment. Weak design: "She ____ her homework yesterday." Stronger design: "Her notebook is closed. She ____ her homework." Students must infer completion from evidence, not from time words. This develops reasoning skills.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-3', label: 'HIGH-FIDELITY POOLING', description: '', promptInjection: 'For MCQ, generate at least one "Near-Miss" distractor: a grammatically correct option that is contextually inferior to the target (e.g., testing Must vs Have To nuance).', active: true, priority: 'Medium', category: 'General' },
@@ -302,79 +248,7 @@ D. wear must
   { id: 'mp-7', label: 'SYNTACTIC DISTANCE STRATEGY', description: 'Separates subject and verb to test structural awareness.', promptInjection: 'At advanced levels, separate the subject from the main verb using relative clauses or prepositional phrases. Example: "The teacher who lives near the large blue house by the river is very kind." Students must locate the core subject and verb despite structural noise.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-advanced-comparison', label: 'ADVANCED COMPARISON STRUCTURES', description: 'Tests complex comparison forms.', promptInjection: 'Actively test less common but correct structures such as: "as good a student as", "of the two", "the more…, the more…", "not so much A as B". These structures measure real grammatical depth.', active: true, priority: 'High', category: 'Grammar' },
   { id: 'mp-8', label: 'ABSTRACT SUBJECTS & INVERSION (LEVEL 8+)', description: '', promptInjection: 'For Level 8+, use abstract subjects (gerunds, clauses), inverted structures, or tricky conjunctions (neither/nor, as well as).', active: true, priority: 'High', category: 'Grammar' },
-  {
-    id: 'mp-test-blueprint',
-    label: 'TEST BLUEPRINT ARCHITECTURE',
-    description: 'Forces planning before generation.',
-    promptInjection: 'STRICT BLUEPRINT PHASE: Before generating any items, you MUST silently design a blueprint. Define: 1. Skill Targets (e.g., tense inference), 2. Difficulty Distribution (30% Easy, 40% Mid, 30% Hard), 3. Distractor Types to be used, 4. Contextual Micro-themes. Only generate content AFTER the blueprint is established.',
-    active: true,
-    priority: 'High',
-    category: 'General'
-  },
-  {
-    id: 'mp-post-audit',
-    label: 'POST-GENERATION QUALITY AUDIT',
-    description: 'Simulates human proofreading and error checking.',
-    promptInjection: 'STRICT POST-AUDIT: After writing the items, verify: 1. No repeated sentence structures, 2. No answer patterns (e.g., C-C-C), 3. No information leaks between items. If a violation is found, rewrite the item BEFORE outputting.',
-    active: true,
-    priority: 'High',
-    category: 'General'
-  },
-  {
-    id: 'mp-distractor-psychology',
-    label: 'DISTRACTOR PSYCHOLOGY MODEL',
-    description: 'Enforces professional-grade trap design.',
-    promptInjection: 'STRICT DISTRACTOR DESIGN: Every MCQ must include at least two: 1. NEAR-MISS (more tall vs taller), 2. SEMANTIC CONFUSION (borrow vs lend), 3. CONTEXTUAL MISFIT (right grammar, wrong meaning), 4. LEARNER ERROR (he don’t like).',
-    active: true,
-    priority: 'High',
-    category: 'Grammar'
-  },
-  {
-    id: 'mp-human-imperfection',
-    label: 'HUMAN IMPERFECTION LAYER',
-    description: 'Breaks AI perfection patterns.',
-    promptInjection: 'STRICT HUMAN IMPERFECTION: Do not make every item perfectly balanced. Allow uneven sentence lengths, varying stem complexity, and occasional "confidence-builder" items that are intentionally simpler.',
-    active: true,
-    priority: 'Medium',
-    category: 'General'
-  },
-  {
-    id: 'mp-corpus-realism',
-    label: 'CORPUS REALISM FILTER',
-    description: 'Ensures natural textbook phrasing.',
-    promptInjection: 'STRICT CORPUS REALISM: Use high-frequency "textbook" English (go, make, take, get). Avoid overly descriptive "AI adjectives." Scenarios must feel like a Cambridge or Oxford workbook.',
-    active: true,
-    priority: 'High',
-    category: 'General'
-  },
-  {
-    id: 'mp-micro-context',
-    label: 'MICRO-STORY CONTEXT SYSTEM',
-    description: 'Adds realistic mini scenarios.',
-    promptInjection: 'STRICT MICRO-CONTEXT: At least 30% of grammar items must use a 2-sentence scenario. Example: "Sophea’s bag is wet. It rained all afternoon. She ____ (bring) an umbrella next time."',
-    active: true,
-    priority: 'High',
-    category: 'Grammar'
-  },
-  {
-    id: 'mp-esl-error-bank',
-    label: 'ESL ERROR BANK',
-    description: 'Injects real learner mistakes as distractors.',
-    promptInjection: 'STRICT ESL ERROR BANK: Distractors must occasionally include real student errors like "more easier," "discuss about," "marry with," "informations," or "depend of."',
-    active: true,
-    priority: 'Medium',
-    category: 'Grammar'
-  },
-  {
-    id: 'mp-skill-tagging',
-    label: 'COGNITIVE SKILL ROTATION',
-    description: 'Forces varied thinking levels.',
-    promptInjection: 'STRICT SKILL ROTATION: Rotate items between Recall, Application, Inference, and Error Detection. Avoid repeating the same cognitive skill three times in a row.',
-    active: true,
-    priority: 'Medium',
-    category: 'General'
-  },
-  {
+  { 
     id: 'mp-9', 
     label: 'WORD FORM SHIFT RULE', 
     description: 'Forces paraphrasing in reading questions.', 
@@ -382,33 +256,6 @@ D. wear must
     active: true, 
     priority: 'High', 
     category: 'Reading' 
-  },
-  {
-    id: 'mp-reading-inference',
-    label: 'INFERENCE & ATTITUDE LOGIC',
-    description: 'Forces questions to test what is implied, not just stated.',
-    promptInjection: 'STRICT INFERENCE: At least 2 questions must start with "The writer suggests..." or "What can be inferred...". The answer must NOT be written literally in the text; students must conclude it based on evidence.',
-    active: true,
-    priority: 'High',
-    category: 'Reading'
-  },
-  {
-    id: 'mp-tfng-logic',
-    label: 'STRICT TFNG BOUNDARIES',
-    description: 'Differentiates clearly between False and Not Given.',
-    promptInjection: 'STRICT TFNG: "False" means the text says the OPPOSITE. "Not Given" means the text mentions the subject but does not confirm that specific detail. Ensure Not Given items are not just "Missing Information" but "Related but Unconfirmed."',
-    active: true,
-    priority: 'High',
-    category: 'Reading'
-  },
-  {
-    id: 'mp-paraphrase-firewall',
-    label: 'ZERO-KEYWORD MATCHING',
-    description: 'Prevents students from finding answers by matching words.',
-    promptInjection: 'STRICT PARAPHRASE: If the text says "The car was expensive," the question must say "The vehicle cost a significant amount." You are FORBIDDEN from using the text’s exact nouns/adjectives in the correct answer.',
-    active: true,
-    priority: 'High',
-    category: 'Reading'
   },
   { 
     id: 'mp-10', 
@@ -584,24 +431,6 @@ D. wear must
     priority: 'High',
     category: 'General'
   },
-  {
-    id: 'mp-pedagogical-notes',
-    label: 'PEDAGOGICAL VOICE',
-    description: 'Adds human-like "Teacher Tips" or reminders.',
-    promptInjection: 'STRICT: Randomly insert one small <b>Tip:</b> or <b>Remember!</b> box at the start of one section (e.g., "Remember: Use the past tense for finished actions!"). This simulates a teacher-made worksheet.',
-    active: true,
-    priority: 'Medium',
-    category: 'General'
-  },
-  {
-    id: 'mp-red-herring',
-    label: 'THE "RED HERRING" LOGIC',
-    description: 'Adds distractors that are correct in a different context.',
-    promptInjection: 'STRICT: For advanced levels, one distractor must be "Grammatically Correct but Contextually Wrong" (e.g., using "since" instead of "for" in a Present Perfect sentence).',
-    active: true,
-    priority: 'High',
-    category: 'Grammar'
-  }
 ];
 
 export const INITIAL_TEMPLATES: InstructionTemplate[] = [
@@ -639,28 +468,7 @@ export const INITIAL_TEMPLATES: InstructionTemplate[] = [
   { id: 'r_matching_info', category: 'READING', label: 'MATCHING INFORMATION', prompt: 'Which paragraph mentions:', columnCount: 0 },
   { id: 'r_inference_qs', category: 'READING', label: 'INFERENCE QUESTIONS', prompt: 'Inference Questions: \nWhat can we infer about the writer’s attitude?\n\nWhy did she hesitate?\n....?', columnCount: 0 },
   { id: 'r_critical_thinking', category: 'READING', label: 'CRITICAL THINKING', prompt: 'short sometimes can be long based on the level independence Paragraph ending or questions from the full paragraph.\n\nFor example, \n1- she is a great student. she pays attention to her friends. What the girl is likely to do...?\n2- \nCritical Thinking: Do you? \nThe girl is likely to....?\nSok bought her sister a pencil because __________', columnCount: 0 },
-  { 
-    id: 'r_mcq_expert', 
-    category: 'READING', 
-    label: 'EXPERT READING MCQ', 
-    prompt: 'Part: Generate a narrative or informational text. Apply [LEXICAL OVERLAP TRAP]. Distractors must include: 1. A "Partial Truth" (mentioned in the text but incomplete), 2. An "Opposite," and 3. A "Contextual Misfit." Apply Zero-Keyword Matching.', 
-    columnCount: 0 
-  },
-  { 
-    id: 'r_referential_qs', 
-    category: 'READING', 
-    label: 'REFERENTIAL RESOLUTION', 
-    prompt: 'Part: Generate 3-5 questions asking what specific pronouns (e.g., "it" in line 4, "they" in line 12) refer to in the passage. This tests structural understanding.', 
-    columnCount: 0 
-  },
-  { 
-    id: 'r_summary_cloze', 
-    category: 'READING', 
-    label: 'SUMMARY COMPLETION (CLOZE)', 
-    prompt: 'Part: Provide a 1-paragraph summary of the reading passage with 5 blanks. Students must find the correct words from the text to fill the blanks. Use exact word-form from the text.', 
-    columnCount: 0 
-  },
-
+  
   // VOCABULARY
   { id: 'v_study_table', category: 'VOCABULARY', label: 'VOCABULARY STUDY', prompt: 'VOCABULARY TABLE. Instructions: Study the following words and their definitions. Use a 2-column HTML table. Column 1: Number + Word/Phrase. Column 2: Easy Definition. STRICT: No MCQ options.', columnCount: 2 },
   { id: 'v_sentence_study', category: 'VOCABULARY', label: 'SENTENCE STUDY', prompt: 'VOCBAULARY STUDY: Study this vocabulary in the sentences. STRICT: No MCQ options. These are example sentences for learning.', columnCount: 0 },

@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
 import { NeuralEngine, QuickSource, OutlineItem, ExternalKeys } from "../types";
 
@@ -8,30 +9,31 @@ export interface NeuralResult {
 }
 
 // ==========================================
-// SECURE ROTATION: Pulls the 12 keys from the bridge we just built
-const API_KEYS = (process.env.GEMINI_KEYS || "")
-    .split(",")
-    .map(key => key.trim())
-    .filter(key => key.length > 0);
+//  THE SPARE BATTERY PACK (API KEY LIST)
+// ==========================================
+const API_KEYS = [
+    "AIzaSyAMdJJiItIVmN3zjzWqhZZX94cL8PzGJ7M",
+    "AIzaSyAqaqCaDHw2LQaYIke5CJ8ctM4oevspRig",
+    "AIzaSyDM0-uHXjX_LYwOLcs_j9virMFUL3eX2Xs",
+    "AIzaSyApBrvFBVOGsyzTKxJ5eBts70Hy6VMslp0",
+    "AIzaSyA1_8oTXES3hGSPW7KAd-yomQBMJ1Zil5c",
+    "AIzaSyAwLBaYPaElWqCfC3IoG8tqwTKdY_RX_2s",
+    "AIzaSyAv2gJNs2NuD1EVLJK3N9CSJuIy6RFD6ro",
+    "AIzaSyCIvsS2Gz35QVbgHZU-MkeG7thKkWNXlyE",
+    "AIzaSyCSI4oJLQ1s60JhGucALalwzzPgp8QE3cA",
+    "AIzaSyCoc7lGtmcpGGZFiVi__rxTk52_53J08XY",
+    // Use the original environment variable as the final backup
+    process.env.API_KEY || ""
+].filter((key, index, self) => key !== "" && self.indexOf(key) === index);
 
 let currentKeyIndex = 0;
 
-function isKeyFailure(error: any): boolean {
+function isQuotaError(error: any): boolean {
     const msg = error?.message?.toLowerCase() || "";
-    // Switch key if: Quota full (429), Key Leaked/Disabled (403), or Invalid
-    return (
-        msg.includes("quota") || 
-        msg.includes("rate limit") || 
-        msg.includes("429") || 
-        msg.includes("403") || 
-        msg.includes("permission_denied") ||
-        msg.includes("expired") ||
-        msg.includes("limit exceeded")
-    );
+    return msg.includes("quota") || msg.includes("rate limit") || msg.includes("429") || msg.includes("resource_exhausted") || msg.includes("limit exceeded");
 }
 
 function incrementKeyIndex() {
-    if (API_KEYS.length === 0) return;
     currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
 }
 
@@ -43,7 +45,8 @@ const withRetry = async <T>(
   try {
     return await fn();
   } catch (error) {
-    if (retries <= 0 || isKeyFailure(error)) throw error; 
+    if (retries <= 0) throw error;
+    if (isQuotaError(error)) throw error; // Don't retry same key if it's a quota error
     await new Promise(resolve => setTimeout(resolve, delay));
     return withRetry(fn, retries - 1, delay * 2);
   }
@@ -57,17 +60,13 @@ export const callNeuralEngine = async (
   userKeys: ExternalKeys = {}
 ): Promise<NeuralResult> => {
   
- modelName = "gemini-1.5-flash";
-    if (API_KEYS.length === 0) {
-        return { text: `<div class="p-6 bg-red-50 text-red-600 rounded-xl">Error: No API keys found in environment.</div>` };
-    }
-
+  if (engine === NeuralEngine.GEMINI_3_FLASH || engine === NeuralEngine.GEMINI_3_PRO) {
     let attempts = 0;
     const maxAttempts = API_KEYS.length;
 
     while (attempts < maxAttempts) {
-      const activeKey = API_KEYS[currentKeyIndex];
       try {
+        const activeKey = API_KEYS[currentKeyIndex];
         return await withRetry(async () => {
           const ai = new GoogleGenAI({ apiKey: activeKey });
           const parts: any[] = [{ text: prompt }];
@@ -90,24 +89,26 @@ export const callNeuralEngine = async (
 
           return {
             text: response.text || "No content generated.",
-            thought: `Neural synthesis complete via ${engine} node. (Key #${currentKeyIndex + 1} active)`,
+            thought: `Neural synthesis complete via ${engine} node. (Key index: ${currentKeyIndex})`,
             keyUsed: activeKey.substring(0, 8) + "..."
           };
         });
       } catch (error: any) {
-        console.warn(`Key #${currentKeyIndex} failed: ${error.message}. Switching...`);
-        if (isKeyFailure(error)) {
+        console.error(`Gemini call failed on key index ${currentKeyIndex}.`, error.message);
+        if (isQuotaError(error)) {
+          console.warn("⚠️ Quota exceeded. Switching batteries...");
           incrementKeyIndex();
           attempts++;
         } else {
-          return { text: `<div class="p-6 bg-red-50 text-red-600 rounded-xl">System Error: ${error.message}</div>` };
+          return { 
+            text: `<div class="p-6 bg-red-50 text-red-600 rounded-xl">Error: ${error.message}</div>` 
+          };
         }
       }
     }
-    return { text: `<div class="p-6 bg-red-50 text-red-600 rounded-xl">Error: All ${API_KEYS.length} keys are exhausted or disabled.</div>` };
+    return { text: `<div class="p-6 bg-red-50 text-red-600 rounded-xl">Error: All Gemini API keys exhausted (Quota limits).</div>` };
   }
 
-  // Handle other engines (GPT-4, etc)
   const userKey = userKeys[engine];
   if (!userKey) return { text: `<div class="p-6 bg-orange-50 text-orange-600">Key required for ${engine}</div>` };
 
@@ -132,13 +133,12 @@ export const callNeuralEngine = async (
   }).catch((error: any) => ({ text: `<div class="p-6 bg-red-50 text-red-600">Error: ${error.message}</div>` }));
 };
 
+// Fixed initialization and property access for generateNeuralOutline.
 export const generateNeuralOutline = async (
   prompt: string
 ): Promise<OutlineItem[]> => {
-  if (API_KEYS.length === 0) return [];
-  
   let attempts = 0;
-  const maxAttempts = API_KEYS.length;
+  const maxAttempts = API_KEYS.length + 1;
 
   while (attempts < maxAttempts) {
     try {
@@ -172,6 +172,7 @@ export const generateNeuralOutline = async (
         }
       });
 
+      // Access .text property directly.
       const jsonStr = response.text || "[]";
       const data = JSON.parse(jsonStr);
       
@@ -186,13 +187,17 @@ export const generateNeuralOutline = async (
 
       return addIds(data);
     } catch (error: any) {
-      if (isKeyFailure(error)) {
+      console.error(`Outline generation failed on key index ${currentKeyIndex}.`, error.message);
+      if (isQuotaError(error)) {
+           console.warn("⚠️ Quota exceeded during outline. Switching batteries...");
            incrementKeyIndex();
            attempts++;
       } else {
+           // Non-quota error, give up on outline.
            return [];
       }
     }
   }
+  console.error("All keys exhausted for outline generation.");
   return [];
 };

@@ -26,7 +26,7 @@ import {
 } from './constants';
 
 // --- THE NEW FIREBASE MAGIC ---
-import { db, auth, signInAnonymously } from './firebase';
+import { db } from './firebase';
 import { collection, addDoc, doc, getDoc, setDoc, updateDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 // ------------------------------
 
@@ -48,38 +48,27 @@ const DEFAULT_BRAND_SETTINGS: BrandSettings = {
   logoData: undefined
 };
 
-const MASTER_PROTOCOLS_KEY = 'dp_master_v43';
-const STRICT_RULES_KEY = 'dp_rules_v43';
-const TEMPLATES_KEY = 'dp_templates_v43';
-const HISTORY_KEY = 'dp_history_v43';
-const BRAND_SETTINGS_KEY = 'dp_brand_v43';
-const USER_SESSION_KEY = 'dp_session_v43';
-const ENGINE_CONFIG_KEY = 'dp_engine_config_v43';
+const MASTER_PROTOCOLS_KEY = 'dp_master_v46';
+const STRICT_RULES_KEY = 'dp_rules_v46';
+const TEMPLATES_KEY = 'dp_templates_v46';
+const HISTORY_KEY = 'dp_history_v46';
+const BRAND_SETTINGS_KEY = 'dp_brand_v46';
+const USER_SESSION_KEY = 'dp_session_v46';
+const ENGINE_CONFIG_KEY = 'dp_engine_config_v46';
 const ONBOARDING_KEY = 'dp_onboarding_v1';
 
 function App() {
-  const [session, setSession] = useState<UserSession>({
-    name: 'Master Architect',
-    code: 'dpss',
-    loginTime: Date.now(),
-    email: 'master@dpss.edu'
+  const [session, setSession] = useState<UserSession | null>(() => {
+    try {
+      const saved = localStorage.getItem(USER_SESSION_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
   });
 
-  useEffect(() => {
-    // Ensure user is authenticated anonymously so Firestore rules work
-    const ensureAuth = async () => {
-      try {
-        if (!auth.currentUser) {
-          await signInAnonymously(auth);
-        }
-      } catch (err) {
-        console.error("Anonymous Auth Error:", err);
-      }
-    };
-    ensureAuth();
-  }, []);
+  // Removed Google Auth states and effects
+  const [authLoading, setAuthLoading] = useState(false);
 
-  const [viewMode, setViewMode] = useState<'generator' | 'preview' | 'book_creation' | 'ielts_master' | 'dpss_studio'>('generator');
+  const [viewMode, setViewMode] = useState<'generator' | 'preview' | 'book_creation' | 'ielts_master' | 'dpss_studio' | 'grammar_iframe'>('grammar_iframe');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAssistantVisible, setIsAssistantVisible] = useState(false);
   const [activeModule, setActiveModule] = useState<string>('Grammar');
@@ -237,6 +226,8 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logoUploadRef = useRef<HTMLInputElement>(null);
 
+  const [loginName, setLoginName] = useState('');
+  const [loginCode, setLoginCode] = useState('');
   const [loginError, setLoginError] = useState('');
 
   const [showOnboarding, setShowOnboarding] = useState(() => {
@@ -357,6 +348,63 @@ function App() {
     return priorities[(currentIndex + 1) % priorities.length];
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const code = loginCode.toLowerCase().trim();
+    const name = loginName.trim();
+    if (!name) { setLoginError('Full name is required.'); return; }
+    
+    // Master Passcodes for Registration/Access
+    const validCodes = ['virtues', 'gratitude', 'dpss'];
+    
+    if (validCodes.some(vc => vc === code)) {
+      try {
+        // Sanitize name for Firestore document ID (remove slashes and other problematic characters)
+        const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        const email = `${sanitizedName}@local.dpss`;
+        const docRef = doc(db, 'allowed_users', email);
+        
+        // Check if user exists in our local "whitelist" (Firestore)
+        const docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists()) {
+          // SELF-REGISTRATION: Add to database automatically if code is correct
+          await setDoc(docRef, {
+            email: email,
+            name: name,
+            registeredAt: Date.now(),
+            lastLogin: Date.now(),
+            status: 'active',
+            accessCodeUsed: code
+          });
+        } else {
+          // UPDATE LAST LOGIN for existing users
+          await updateDoc(docRef, { lastLogin: Date.now() });
+        }
+
+        const newSession: UserSession = { 
+          name: name, 
+          code: code, 
+          loginTime: Date.now(),
+          email: email
+        };
+        setSession(newSession);
+        localStorage.setItem(USER_SESSION_KEY, JSON.stringify(newSession));
+      } catch (err: any) {
+        console.error("Auth Error:", err);
+        setLoginError("Neural synchronization failed.");
+      }
+    } else { 
+      setLoginError('Invalid Access Code.'); 
+    }
+  };
+
+  const handleLogout = async () => { 
+    setSession(null); 
+    localStorage.removeItem(USER_SESSION_KEY); 
+  };
+  
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
     localStorage.setItem(ONBOARDING_KEY, 'completed');
@@ -525,10 +573,29 @@ function App() {
         ? `(FORMAT: HTML <table> with ${overrideCol} columns. Ensure items are distributed evenly.)` 
         : `(FORMAT: Standard numbered list. DO NOT use tables or columns.)`;
         
-      return `PART ${String.fromCharCode(65 + idx)} [Title Adaptation: ${t.label}]: ${t.prompt.replace(/{{BLANK}}/g, selectedBlankStyle)} (GENERATE EXACTLY ${overrideItems} ITEMS) (USE THIS ANSWER KEY: ${blueprintStr}) ${formatInstruction}`;
+      return `PART ${String.fromCharCode(65 + idx)} [MANDATORY INSTRUCTION HEADER: ${t.label}]: ${t.prompt.replace(/{{BLANK}}/g, selectedBlankStyle)} (GENERATE EXACTLY ${overrideItems} ITEMS) (USE THIS ANSWER KEY: ${blueprintStr}) ${formatInstruction}`;
     }).join('\n\n');
 
+    const moduleSafetyGuard = activeModule === 'Grammar'
+      ? `[MODULE SAFETY GUARD - CRITICAL]: You are generating a GRAMMAR assessment. You are strictly FORBIDDEN from including reading passages or vocabulary-only definitions. Focus 100% on grammar rules, situational logic, and positional word order. Ensure NO LEAKAGE from Reading or Vocabulary modules.`
+      : activeModule === 'Vocabulary'
+      ? `[MODULE SAFETY GUARD - CRITICAL]: You are generating a VOCABULARY assessment. You are strictly FORBIDDEN from testing grammar rules, injecting grammar errors, or including reading passages. 
+         - NO READING LOGIC: Do NOT include "Not Mentioned" or "Unknown" options. 
+         - NO GRAMMAR LOGIC: Protocol 21 (Cross-Topic Injection) and Rule 1 (No-Free-Verb) are DISABLED. 
+         - NO GRAMMAR TOPICS: Avoid using sentences that test "Must/Have to", "Should", or other modal verbs. Focus on the meaning of the word itself.
+         - PURE SEMANTICS: Focus 100% on word meanings. All distractors must be grammatically identical to the correct answer.`
+      : activeModule === 'Reading'
+      ? `[MODULE SAFETY GUARD - CRITICAL]: You are generating a READING assessment. You are strictly FORBIDDEN from testing grammar rules or injecting grammar errors. Focus 100% on comprehension and inference logic.`
+      : '';
+
+    const mandatorySequence = activeModule === 'Grammar' 
+      ? `1. PRE-ASSIGN balanced answer keys (A-D).\n2. GENERATE ALL REQUESTED PARTS. ADAPT TITLES TO MATCH "${topic}".\n3. ENFORCE "NO FREE VERB" & "SITUATIONAL EVIDENCE" rules for all grammar stems.`
+      : activeModule === 'Reading'
+      ? `1. GENERATE A PASSAGE (~300-500 words) about "${topic}".\n2. APPLY [NATURAL PARAPHRASE] logic to all questions (No keyword matching).\n3. ENFORCE [READING LOGIC FIREWALL] (Strictly forbidden from testing grammar).\n4. ENSURE all distractors are grammatically identical to the correct answer.`
+      : `1. PRE-ASSIGN balanced answer keys (A-D).\n2. GENERATE ALL REQUESTED PARTS. ADAPT TITLES TO MATCH "${topic}".\n3. ENFORCE [VOCABULARY FIREWALL] (No grammar clues).`;
+
     const finalLogic = `
+${moduleSafetyGuard}
 ${GLOBAL_STRICT_COMMAND.replace(/{{TOPIC}}/g, topic || "General English").replace(/{{BLANK}}/g, selectedBlankStyle)}
 ${protocolsPrompt}
 ${strategyInstruction.replace(/{{TOPIC}}/g, topic || "General English")}
@@ -540,9 +607,7 @@ ${rulesPrompt}
 [LANGUAGE]: ${activeLanguage}
 
 ### MANDATORY SEQUENCE ###
-1. PRE-ASSIGN balanced answer keys (A-D).
-2. GENERATE ALL REQUESTED PARTS. ADAPT TITLES TO MATCH "${topic}".
-3. ENFORCE "NO FREE VERB" & "SITUATIONAL EVIDENCE" rules for all grammar stems.
+${mandatorySequence}
 
 ${componentLogic}
     `;
@@ -666,6 +731,32 @@ ${componentLogic}
     setExpandedTemplateId(newId);
   };
 
+  if (!session) {
+    return (
+      <div className="h-screen w-screen bg-[#0b1221] flex items-center justify-center p-6 text-white overflow-hidden">
+        <div className="w-full max-w-xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-[64px] p-12 text-center shadow-2xl">
+           <div className="h-20 w-20 bg-orange-600 rounded-3xl flex items-center justify-center shadow-2xl mx-auto mb-12"><i className="fa-solid fa-bolt text-white text-3xl"></i></div>
+           <h1 className="text-2xl font-[900] uppercase tracking-wider mb-8">DPSS Ultimate Test Builder Backend</h1>
+           
+           <form onSubmit={handleLogin} className="space-y-6 text-left animate-in fade-in slide-in-from-bottom-6 duration-500">
+              <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl mb-4">
+                <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest text-center">
+                  Neural Access: Enter Name and Passcode
+                </p>
+              </div>
+
+              <input type="text" value={loginName} onChange={(e) => setLoginName(e.target.value)} placeholder="Full Name" className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-orange-500 font-bold" />
+              <input type="password" value={loginCode} onChange={(e) => setLoginCode(e.target.value)} placeholder="Access Code / Passcode" className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-orange-500 font-bold" />
+              {loginError && <p className="text-rose-500 text-xs font-black uppercase text-center">{loginError}</p>}
+              <button type="submit" className="w-full bg-orange-600 text-white py-6 rounded-3xl text-sm font-black uppercase tracking-widest hover:brightness-110 shadow-xl transition-all">
+                Synchronize Neural Path
+              </button>
+           </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen overflow-hidden text-slate-300 relative transition-all duration-500">
       {showOnboarding && <OnboardingTutorial onComplete={handleOnboardingComplete} />}
@@ -679,6 +770,7 @@ ${componentLogic}
               <div className="p-6 border-t border-[#1f2937] space-y-2">
               <button onClick={() => setShowOnboarding(true)} className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400 text-[9px] font-black uppercase hover:bg-white/10 transition-all"><span>Restart Tutorial</span><i className="fa-solid fa-circle-question"></i></button>
               <button onClick={() => setShowSettings(true)} className="w-full flex items-center justify-between p-5 rounded-2xl bg-gradient-to-r from-accent-orange-dark to-accent-orange-light text-white shadow-lg uppercase text-[11px] font-black hover:brightness-110 transition-all"><span>Architect Settings</span><i className="fa-solid fa-gear"></i></button>
+              <button onClick={handleLogout} className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-slate-500 text-[9px] font-black uppercase hover:bg-white/10 transition-all">Logout Session</button>
             </div>
           </aside>
 
@@ -694,27 +786,43 @@ ${componentLogic}
               
               <div className="space-y-4">
                  <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Assessment Matrix</h3>
-                 <div className="flex bg-[#111827] p-1.5 rounded-2xl border border-[#1f2937] gap-1 overflow-x-auto no-scrollbar">
-                    {INITIAL_MODULES.map(mod => (<button key={mod} onClick={() => { setActiveModule(mod); setSelectedInstructionIds([]); setViewMode('generator'); }} className={`flex-1 min-w-[100px] py-4 px-6 rounded-xl transition-all ${activeModule === mod && viewMode === 'generator' ? 'bg-accent-blue text-white shadow-lg' : 'text-slate-600 hover:text-slate-400'}`}><div className="text-[11px] font-black uppercase tracking-widest">{mod}</div></button>))}
+                  <div className="flex bg-[#111827] p-1.5 rounded-2xl border border-[#1f2937] gap-1 overflow-x-auto no-scrollbar">
+                    {INITIAL_MODULES.map(mod => (
+                      <button 
+                        key={mod} 
+                        onClick={() => { 
+                          setActiveModule(mod); 
+                          setSelectedInstructionIds([]); 
+                          if (mod === 'Grammar') {
+                            setViewMode('grammar_iframe');
+                          } else {
+                            setViewMode('generator');
+                          }
+                        }} 
+                        className={`flex-1 min-w-[100px] py-4 px-6 rounded-xl transition-all ${(activeModule === mod && (viewMode === 'generator' || viewMode === 'grammar_iframe')) ? 'bg-accent-blue text-white shadow-lg' : 'text-slate-600 hover:text-slate-400'}`}
+                      >
+                        <div className="text-[11px] font-black tracking-widest">{mod}</div>
+                      </button>
+                    ))}
                     <button 
                       onClick={() => setViewMode('book_creation')} 
                       className={`flex-1 min-w-[150px] py-4 px-6 rounded-xl transition-all ${viewMode === 'book_creation' ? 'bg-accent-blue text-white shadow-lg' : 'text-slate-600 hover:text-slate-400'}`}
                     >
-                      <div className="text-[11px] font-black uppercase tracking-widest">BOOK CREATION</div>
+                      <div className="text-[11px] font-black tracking-widest">Book Creation</div>
                     </button>
                     <button 
                       onClick={() => setViewMode('ielts_master')} 
                       className={`flex-1 min-w-[150px] py-4 px-6 rounded-xl transition-all ${viewMode === 'ielts_master' ? 'bg-accent-blue text-white shadow-lg' : 'text-slate-600 hover:text-slate-400'}`}
                     >
-                      <div className="text-[11px] font-black uppercase tracking-widest">IELTS Master</div>
+                      <div className="text-[11px] font-black tracking-widest">IELTS Master</div>
                     </button>
                     <button 
                       onClick={() => setViewMode('dpss_studio')} 
                       className={`flex-1 min-w-[150px] py-4 px-6 rounded-xl transition-all ${viewMode === 'dpss_studio' ? 'bg-accent-blue text-white shadow-lg' : 'text-slate-600 hover:text-slate-400'}`}
                     >
-                      <div className="text-[11px] font-black uppercase tracking-widest">DPSS STUDIO</div>
+                      <div className="text-[11px] font-black tracking-widest">DPSS Studio</div>
                     </button>
-                 </div>
+                  </div>
               </div>
 
               <div className="space-y-4">
@@ -789,6 +897,41 @@ ${componentLogic}
         </section>
       )}
 
+      {viewMode === 'grammar_iframe' && (
+        <section className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500">
+          <div className="p-4 lg:p-6 border-b border-[#1f2937] flex flex-wrap gap-4 justify-between items-center backdrop-blur-xl z-10 no-print shadow-2xl">
+            <button onClick={() => setViewMode('generator')} className="border border-[#1f2937] text-white px-6 lg:px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-slate-900/50 flex items-center gap-4 group shadow-xl">
+              <i className="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> ARCHITECT
+            </button>
+            <div className="flex-1 text-center">
+              <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Grammar Architect</h2>
+            </div>
+            <div className="flex gap-2">
+              <a 
+                href="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
+              >
+                <i className="fa-solid fa-arrow-up-right-from-square"></i> Launch Tool
+              </a>
+            </div>
+          </div>
+          <div className="flex-1 bg-white overflow-hidden relative">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-10 text-center bg-slate-50 -z-10">
+              <i className="fa-solid fa-circle-exclamation text-4xl text-slate-300 mb-4"></i>
+              <p className="text-slate-500 font-bold text-sm">If the tool refuses to connect, please use the "Launch Tool" button above.</p>
+            </div>
+            <iframe 
+              src="https://aistudio.google.com/apps/f6448ec0-06de-44f2-93d6-13cd43bceb87?showPreview=true&showAssistant=true"
+              className="w-full h-full min-h-[800px] border-none relative z-10"
+              title="Grammar Tool"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            />
+          </div>
+        </section>
+      )}
+
       {viewMode === 'book_creation' && (
         <section className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-500">
           <div className="p-4 lg:p-6 border-b border-[#1f2937] flex flex-wrap gap-4 justify-between items-center backdrop-blur-xl z-10 no-print shadow-2xl">
@@ -798,11 +941,25 @@ ${componentLogic}
             <div className="flex-1 text-center">
               <h2 className="text-white font-black uppercase tracking-widest text-[12px]">Neural Book Architect</h2>
             </div>
+            <div className="flex gap-2">
+              <a 
+                href="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-orange-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl flex items-center gap-2"
+              >
+                <i className="fa-solid fa-arrow-up-right-from-square"></i> Launch Tool
+              </a>
+            </div>
           </div>
-          <div className="flex-1 bg-white overflow-hidden">
+          <div className="flex-1 bg-white overflow-hidden relative">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-10 text-center bg-slate-50 -z-10">
+              <i className="fa-solid fa-circle-exclamation text-4xl text-slate-300 mb-4"></i>
+              <p className="text-slate-500 font-bold text-sm">If the tool refuses to connect, please use the "Launch Tool" button above.</p>
+            </div>
             <iframe 
               src="https://remix-book-creation-4-deploy-370806846570.us-west1.run.app/"
-              className="w-full h-full min-h-[800px] border-none"
+              className="w-full h-full min-h-[800px] border-none relative z-10"
               title="Book Creation Tool"
             />
           </div>
@@ -860,7 +1017,7 @@ ${componentLogic}
         <div className="fixed inset-0 z-[250] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-4">
           <div className="bg-[#f8fafc] bg-[radial-gradient(circle_at_top_right,rgba(234,88,12,0.03),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.03),transparent_40%)] rounded-[48px] lg:rounded-[64px] w-full max-w-7xl h-full max-h-[95vh] overflow-hidden shadow-2xl flex flex-col border border-white/50">
              <div className="p-8 lg:p-12 pb-4 flex justify-between items-center"><div className="flex items-center gap-4"><div className="h-4 w-4 bg-orange-600 rounded-full animate-pulse"></div><h2 className="text-[12px] font-black uppercase text-slate-900 tracking-widest">Workspace Control Node</h2></div><button onClick={() => setShowSettings(false)} className="h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900"><i className="fa-solid fa-xmark text-xl"></i></button></div>
-             <div className="px-6 lg:px-12 mb-8"><div className="flex bg-slate-100/70 p-2 rounded-[32px] gap-1 overflow-x-auto no-scrollbar shadow-inner">{['COMMAND', 'ENGINE', 'BACKBONE LOGIC', 'DISPLAY', 'DESIGN'].map(tab => (<button key={tab} onClick={() => setSettingsTab(tab as SettingsTab)} className={`px-6 lg:px-10 py-4 rounded-[28px] text-[10px] font-black uppercase tracking-widest transition-all ${settingsTab === tab ? 'bg-orange-600 text-white shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}>{tab}</button>))}</div></div>
+             <div className="px-6 lg:px-12 mb-8"><div className="flex bg-slate-100/70 p-2 rounded-[32px] gap-1 overflow-x-auto no-scrollbar shadow-inner">{['ACCOUNT', 'COMMAND', 'ENGINE', 'BACKBONE LOGIC', 'DISPLAY', 'DESIGN'].map(tab => (<button key={tab} onClick={() => setSettingsTab(tab as SettingsTab)} className={`px-6 lg:px-10 py-4 rounded-[28px] text-[10px] font-black uppercase tracking-widest transition-all ${settingsTab === tab ? 'bg-orange-600 text-white shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}>{tab}</button>))}</div></div>
              <div className="flex-1 overflow-y-auto px-6 lg:px-12 pb-12 space-y-12 no-scrollbar">
                 {settingsTab === 'DESIGN' && (
                   <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6">
@@ -933,6 +1090,18 @@ ${componentLogic}
                         })}
                      </div>
                    </div>
+                )}
+                {settingsTab === 'ACCOUNT' && (
+                  <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6">
+                    <h3 className="text-[13px] font-black text-slate-900 uppercase tracking-widest">Session Identity</h3>
+                    <div className="bg-white border border-slate-100 rounded-[40px] p-10 flex items-center gap-8 shadow-sm">
+                      <div className="h-20 w-20 bg-orange-600 rounded-full flex items-center justify-center text-white text-3xl font-black">{session.name.charAt(0)}</div>
+                      <div className="space-y-1">
+                        <div className="text-2xl font-black text-slate-900 uppercase">{session.name}</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Access Code: {session.code} • Active since {new Date(session.loginTime).toLocaleTimeString()}</div>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 {settingsTab === 'ENGINE' && (
                   <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6">
@@ -1026,14 +1195,24 @@ ${componentLogic}
                     <div className="space-y-8">
                        <div className="flex justify-between items-center px-2">
                          <h3 className="text-[13px] font-black text-master-green uppercase tracking-widest">Master Protocols</h3>
-                         <button onClick={addProtocol} className="text-[11px] font-black text-master-green uppercase border-b-2 border-master-green">+ New Protocol</button>
+                         {!(session?.code === 'dpss' || session?.code === 'gratitude') && (
+                           <div className="flex items-center gap-2 text-rose-500 animate-pulse">
+                             <i className="fa-solid fa-lock text-[10px]"></i>
+                             <span className="text-[10px] font-black uppercase tracking-widest">Restricted Access</span>
+                           </div>
+                         )}
+                         {(session?.code === 'dpss' || session?.code === 'gratitude') && (
+                           <button onClick={addProtocol} className="text-[11px] font-black text-master-green uppercase border-b-2 border-master-green">+ New Protocol</button>
+                         )}
                        </div>
-                       <div className="flex bg-slate-100/50 p-1.5 rounded-[24px] gap-1 overflow-x-auto no-scrollbar shadow-sm border border-slate-100 self-start">
-                         {['General', 'Grammar', 'Vocabulary', 'Reading'].map(cat => (
-                           <button key={cat} onClick={() => setActiveProtocolCategory(cat as RuleCategory)} className={`px-6 py-2.5 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${activeProtocolCategory === cat ? 'bg-master-green text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>{cat}</button>
-                         ))}
-                       </div>
-                       <div className="space-y-3">
+                       {(session?.code === 'dpss' || session?.code === 'gratitude') ? (
+                         <>
+                           <div className="flex bg-slate-100/50 p-1.5 rounded-[24px] gap-1 overflow-x-auto no-scrollbar shadow-sm border border-slate-100 self-start">
+                             {['General', 'Grammar', 'Vocabulary', 'Reading'].map(cat => (
+                               <button key={cat} onClick={() => setActiveProtocolCategory(cat as RuleCategory)} className={`px-6 py-2.5 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${activeProtocolCategory === cat ? 'bg-master-green text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>{cat}</button>
+                             ))}
+                           </div>
+                           <div className="space-y-3">
                              {masterProtocols.filter(p => p.category === activeProtocolCategory).map(p => {
                                const isExpanded = expandedProtocolId === p.id;
                                return (
@@ -1093,6 +1272,14 @@ ${componentLogic}
                                );
                              })}
                            </div>
+                         </>
+                       ) : (
+                         <div className="p-12 border-2 border-dashed border-slate-100 rounded-[40px] flex flex-col items-center justify-center gap-4 bg-slate-50/50">
+                           <i className="fa-solid fa-shield-halved text-slate-200 text-4xl"></i>
+                           <div className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Neural Protocols Encrypted</div>
+                           <div className="text-[9px] font-medium text-slate-400 text-center max-w-[200px]">Please authenticate with a Master Architect code to modify core protocols.</div>
+                         </div>
+                       )}
                     </div>
                      <div className="space-y-8">
                         <div className="flex justify-between items-center px-2">
@@ -1169,6 +1356,7 @@ ${componentLogic}
                 )}
              </div>
               <div className="p-12 bg-slate-50 border-t border-slate-100 flex justify-end gap-4">
+                <button onClick={handleLogout} className="px-16 py-6 bg-white border border-slate-200 text-rose-500 rounded-full text-[12px] font-black uppercase shadow-sm hover:bg-rose-50 transition-all">Terminate Architecture</button>
                 <button onClick={hardReset} className="px-16 py-6 bg-rose-600 text-white rounded-full text-[12px] font-black uppercase shadow-xl hover:bg-rose-700 transition-all">Hard Reset</button>
                 <button onClick={syncWithDefaults} className="px-16 py-6 bg-slate-900 text-white rounded-full text-[12px] font-black uppercase shadow-xl hover:bg-black transition-all">Sync Settings</button>
                 <button onClick={() => setShowSettings(false)} className="px-16 py-6 bg-gradient-to-r from-accent-orange-dark to-accent-orange-light text-white rounded-full text-[12px] font-black uppercase shadow-xl hover:brightness-110 transition-all">Close Panel</button>
