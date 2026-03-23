@@ -206,7 +206,7 @@ function App() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // FIX: This strips ALL spaces and hidden characters that cause "dpss" to fail on some devices
+    // This removes every single non-alphabet character to ensure "dpss" always matches
     const sanitizedCode = loginCode.toLowerCase().replace(/[^a-z]/g, '');
     
     if (['virtues', 'gratitude', 'dpss'].includes(sanitizedCode)) {
@@ -323,4 +323,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
