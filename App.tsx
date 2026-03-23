@@ -85,7 +85,7 @@ function App() {
   const [expandedRuleId, setExpandedRuleId] = useState<string | null>(null);
   const [activeProtocolCategory, setActiveProtocolCategory] = useState<RuleCategory>('General');
   const [expandedProtocolId, setExpandedProtocolId] = useState<string | null>(null);
-  const [activeTemplateCategory, setActiveTemplateCategory] = useState<string>('GRAMMAR');
+  const [activeTemplateCategory, setActiveTemplateCategory] = useState<string>('Grammar');
   const [expandedTemplateId, setExpandedTemplateId] = useState<string | null>(null);
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -1077,7 +1077,7 @@ ${componentLogic}
                 {settingsTab === 'COMMAND' && (
                    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6">
                      <div className="flex justify-between items-center px-2"><h3 className="text-[13px] font-black text-slate-900 uppercase tracking-widest">Instruction Templates</h3><button onClick={addTemplate} className="text-[11px] font-black text-orange-600 uppercase border-b-2 border-orange-600">+ New Part</button></div>
-                     <div className="flex bg-slate-100/50 p-1.5 rounded-[24px] gap-1 overflow-x-auto no-scrollbar shadow-sm border border-slate-100 self-start">{['GRAMMAR', 'VOCABULARY', 'READING', 'TABLES', 'KIDS'].map(cat => (<button key={cat} onClick={() => setActiveTemplateCategory(cat)} className={`px-6 py-2.5 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${activeTemplateCategory === cat ? 'bg-orange-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>{cat}</button>))}</div>
+                     <div className="flex bg-slate-100/50 p-1.5 rounded-[24px] gap-1 overflow-x-auto no-scrollbar shadow-sm border border-slate-100 self-start">{['Grammar', 'Vocabulary', 'Reading', 'Tables', 'Kids'].map(cat => (<button key={cat} onClick={() => setActiveTemplateCategory(cat)} className={`px-6 py-2.5 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${activeTemplateCategory === cat ? 'bg-orange-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>{cat}</button>))}</div>
                      <div className="space-y-3">
                         {instructionTemplates.filter(t => t.category === activeTemplateCategory).map(t => {
                             const isExpanded = expandedTemplateId === t.id;

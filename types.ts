@@ -44,7 +44,7 @@ export interface InstructionTemplate {
   id: string;
   label: string;
   prompt: string;
-  category: 'GRAMMAR' | 'VOCABULARY' | 'READING' | 'TABLES' | 'KIDS';
+  category: 'Grammar' | 'Vocabulary' | 'Reading' | 'Tables' | 'Kids';
   displayLetter?: string;
   columnCount?: number;
 }
