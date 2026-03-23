@@ -130,12 +130,16 @@ function App() {
             setBrandSettings(docSnap.data().brandSettings);
           }
           loadedEmailRef.current = session.email;
-        } catch (e) { console.error(e); } finally { setIsBrandLoaded(true); }
+        } catch (e) { 
+          console.error("Firestore failed:", e); 
+        } finally { 
+          setIsBrandLoaded(true); 
+        }
       } else { setIsBrandLoaded(true); }
     };
     fetchBrand();
   }, [session?.email]);
-  
+
   const [history, setHistory] = useState<HistoryItem[]>(() => {
     try {
       const saved = localStorage.getItem(HISTORY_KEY);
@@ -152,7 +156,9 @@ function App() {
           const h: HistoryItem[] = [];
           snap.forEach((d) => h.push(d.data() as HistoryItem));
           if (h.length > 0) setHistory(h);
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+          console.error("History fetch failed:", e); 
+        }
       };
       fetchHistory();
     }
@@ -197,7 +203,8 @@ function App() {
   useEffect(() => { 
     localStorage.setItem(BRAND_SETTINGS_KEY, JSON.stringify(brandSettings)); 
     if (session?.email && isBrandLoaded && loadedEmailRef.current === session.email) {
-      setDoc(doc(db, 'user_settings', session.email), { brandSettings }, { merge: true }).catch(console.error);
+      setDoc(doc(db, 'user_settings', session.email), { brandSettings }, { merge: true })
+        .catch((e) => console.error("Save failed:", e));
     }
   }, [brandSettings, session?.email, isBrandLoaded]);
 
@@ -209,12 +216,22 @@ function App() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (['virtues', 'gratitude', 'dpss'].includes(loginCode.toLowerCase().trim())) {
+
+    if (loginCode.toLowerCase().trim() === 'dpss') {
       const email = `${loginName.toLowerCase().replace(/\s+/g, '_')}@local.dpss`;
-      const s = { name: loginName, code: loginCode, loginTime: Date.now(), email };
+      
+      const s = {
+        name: loginName,
+        code: loginCode,
+        loginTime: Date.now(),
+        email
+      };
+      
       setSession(s);
       localStorage.setItem(USER_SESSION_KEY, JSON.stringify(s));
-    } else { setLoginError('Invalid Access Code.'); }
+    } else {
+      setLoginError('Invalid Access Code. Use "dpss"');
+    }
   };
 
   const handleGenerate = async () => {
