@@ -16,10 +16,10 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm install
-      # THIS LINE BELOW IS THE FIX: It gives the key to the builder
       - run: npm run build
         env:
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
