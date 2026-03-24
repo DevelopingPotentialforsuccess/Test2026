@@ -26,8 +26,7 @@ import {
 } from './constants';
 
 // --- THE NEW FIREBASE MAGIC ---
-import { db } from './firebase';
-import { collection, addDoc, doc, getDoc, setDoc, updateDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+// (Bypassed for local reliability)
 // ------------------------------
 
 import { callNeuralEngine } from './services/neuralService';
@@ -61,9 +60,15 @@ function App() {
   const [session, setSession] = useState<UserSession | null>(() => {
     try {
       const saved = localStorage.getItem(USER_SESSION_KEY);
-      return saved ? JSON.parse(saved) : null;
-    } catch { return null; }
+      if (saved) return JSON.parse(saved);
+      // Default session to bypass login
+      return { name: 'Chanthy', code: 'none', loginTime: Date.now(), email: 'chanthy@local.dpss' };
+    } catch { 
+      return { name: 'Chanthy', code: 'none', loginTime: Date.now(), email: 'chanthy@local.dpss' }; 
+    }
   });
+
+  // Removed Firebase Auth initialization
 
   // Removed Google Auth states and effects
   const [authLoading, setAuthLoading] = useState(false);
@@ -122,19 +127,18 @@ function App() {
   const [isBrandLoaded, setIsBrandLoaded] = useState(false);
   const loadedEmailRef = useRef<string | null>(null);
 
-  // Fetch brand settings from Firestore on login
+  // Fetch brand settings from localStorage on login
   useEffect(() => {
-    const fetchBrandSettings = async () => {
+    const fetchBrandSettings = () => {
       // Reset load state when user changes
       setIsBrandLoaded(false);
       loadedEmailRef.current = null;
 
       if (session?.email) {
         try {
-          const docRef = doc(db, 'user_settings', session.email);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().brandSettings) {
-            setBrandSettings(docSnap.data().brandSettings);
+          const saved = localStorage.getItem(`brand_settings_${session.email}`);
+          if (saved) {
+            setBrandSettings(JSON.parse(saved));
           }
           // Mark this email as loaded
           loadedEmailRef.current = session.email;
@@ -157,30 +161,12 @@ function App() {
     } catch { return []; }
   });
 
-  const fetchCloudHistory = async (email: string) => {
-    try {
-      const q = query(
-        collection(db, 'generatedTests'),
-        where('authorEmail', '==', email),
-        orderBy('timestamp', 'desc'),
-        limit(30)
-      );
-      const querySnapshot = await getDocs(q);
-      const cloudHistory: HistoryItem[] = [];
-      querySnapshot.forEach((doc) => {
-        cloudHistory.push(doc.data() as HistoryItem);
-      });
-      if (cloudHistory.length > 0) {
-        setHistory(cloudHistory);
-      }
-    } catch (e) {
-      console.error("Error fetching cloud history:", e);
-    }
-  };
-
   useEffect(() => {
     if (session?.email) {
-      fetchCloudHistory(session.email);
+      const saved = localStorage.getItem(`history_${session.email}`);
+      if (saved) {
+        setHistory(JSON.parse(saved));
+      }
     }
   }, [session?.email]);
 
@@ -227,7 +213,6 @@ function App() {
   const logoUploadRef = useRef<HTMLInputElement>(null);
 
   const [loginName, setLoginName] = useState('');
-  const [loginCode, setLoginCode] = useState('');
   const [loginError, setLoginError] = useState('');
 
   const [showOnboarding, setShowOnboarding] = useState(() => {
@@ -269,30 +254,16 @@ function App() {
       localStorage.setItem(MASTER_PROTOCOLS_KEY, JSON.stringify(masterProtocols)); 
     } catch (e) { console.warn("Protocols storage limit reached", e); }
   }, [masterProtocols]);
+  // Auto-save brand settings to localStorage
   useEffect(() => { 
     try {
       localStorage.setItem(BRAND_SETTINGS_KEY, JSON.stringify(brandSettings)); 
+      if (session?.email && isBrandLoaded && loadedEmailRef.current === session.email) {
+        localStorage.setItem(`brand_settings_${session.email}`, JSON.stringify(brandSettings));
+      }
     } catch (e) {
       console.warn("Storage quota exceeded. Some branding settings might not persist locally.", e);
     }
-    
-    // Persist brand settings to Firestore
-    const persistBrandSettings = async () => {
-      // Only save if we are logged in AND the current user's data has been loaded
-      if (session?.email && isBrandLoaded && loadedEmailRef.current === session.email) {
-        try {
-          const docRef = doc(db, 'user_settings', session.email);
-          await setDoc(docRef, { brandSettings }, { merge: true });
-        } catch (e) {
-          console.error("Error persisting brand settings:", e);
-          // Alert user if save fails, likely due to size
-          if (e instanceof Error && e.message.includes('too large')) {
-             alert("CRITICAL: Your logo collection is too large to save to the cloud. Please delete some logos or use smaller images.");
-          }
-        }
-      }
-    };
-    persistBrandSettings();
   }, [brandSettings, session?.email, isBrandLoaded]);
   useEffect(() => { 
     localStorage.setItem('dp_theme_v30', activeThemeId); 
@@ -351,53 +322,21 @@ function App() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const code = loginCode.toLowerCase().trim();
     const name = loginName.trim();
     if (!name) { setLoginError('Full name is required.'); return; }
     
-    // Master Passcodes for Registration/Access
-    const validCodes = ['virtues', 'gratitude', 'dpss'];
-    
-    if (validCodes.some(vc => vc === code)) {
-      try {
-        // Sanitize name for Firestore document ID (remove slashes and other problematic characters)
-        const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        const email = `${sanitizedName}@local.dpss`;
-        const docRef = doc(db, 'allowed_users', email);
-        
-        // Check if user exists in our local "whitelist" (Firestore)
-        const docSnap = await getDoc(docRef);
-        
-        if (!docSnap.exists()) {
-          // SELF-REGISTRATION: Add to database automatically if code is correct
-          await setDoc(docRef, {
-            email: email,
-            name: name,
-            registeredAt: Date.now(),
-            lastLogin: Date.now(),
-            status: 'active',
-            accessCodeUsed: code
-          });
-        } else {
-          // UPDATE LAST LOGIN for existing users
-          await updateDoc(docRef, { lastLogin: Date.now() });
-        }
+    const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    const email = `${sanitizedName}@local.dpss`;
 
-        const newSession: UserSession = { 
-          name: name, 
-          code: code, 
-          loginTime: Date.now(),
-          email: email
-        };
-        setSession(newSession);
-        localStorage.setItem(USER_SESSION_KEY, JSON.stringify(newSession));
-      } catch (err: any) {
-        console.error("Auth Error:", err);
-        setLoginError("Neural synchronization failed.");
-      }
-    } else { 
-      setLoginError('Invalid Access Code.'); 
-    }
+    const newSession: UserSession = { 
+      name: name, 
+      code: 'none', 
+      loginTime: Date.now(),
+      email: email
+    };
+    
+    setSession(newSession);
+    localStorage.setItem(USER_SESSION_KEY, JSON.stringify(newSession));
   };
 
   const handleLogout = async () => { 
@@ -641,22 +580,18 @@ ${componentLogic}
         topic: topic,
         // Add who created it
         authorName: session?.name || 'Anonymous',
-        authorCode: session?.code || 'N/A',
+        authorCode: 'none',
         authorEmail: session?.email || 'N/A'
       };
 
       // 3. Update Local History (so you see it on screen)
-      setHistory(prev => [newTestItem, ...prev].slice(0, 30));
-
-      // 4. SEND TO THE CLOUD (The Magic Step!)
-      try {
-           // This line sends the data to a collection named 'generatedTests' in your Firebase database
-           await addDoc(collection(db, 'generatedTests'), newTestItem);
-           console.log("✅☁️ Test successfully saved to the Firebase Cloud Notebook!");
-      } catch (e) {
-           // If something goes wrong, tell the console
-           console.error("❌☁️ Error saving to cloud notebook:", e);
-      }
+      setHistory(prev => {
+        const updated = [newTestItem, ...prev].slice(0, 30);
+        if (session?.email) {
+          localStorage.setItem(`history_${session.email}`, JSON.stringify(updated));
+        }
+        return updated;
+      });
     } catch (error: any) {
       console.error("Generation failed:", error);
       alert("Neural synthesis failed. Please check your connection or API keys.");
@@ -731,31 +666,7 @@ ${componentLogic}
     setExpandedTemplateId(newId);
   };
 
-  if (!session) {
-    return (
-      <div className="h-screen w-screen bg-[#0b1221] flex items-center justify-center p-6 text-white overflow-hidden">
-        <div className="w-full max-w-xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-[64px] p-12 text-center shadow-2xl">
-           <div className="h-20 w-20 bg-orange-600 rounded-3xl flex items-center justify-center shadow-2xl mx-auto mb-12"><i className="fa-solid fa-bolt text-white text-3xl"></i></div>
-           <h1 className="text-2xl font-[900] uppercase tracking-wider mb-8">DPSS Ultimate Test Builder Backend</h1>
-           
-           <form onSubmit={handleLogin} className="space-y-6 text-left animate-in fade-in slide-in-from-bottom-6 duration-500">
-              <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl mb-4">
-                <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest text-center">
-                  Neural Access: Enter Name and Passcode
-                </p>
-              </div>
-
-              <input type="text" value={loginName} onChange={(e) => setLoginName(e.target.value)} placeholder="Full Name" className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-orange-500 font-bold" />
-              <input type="password" value={loginCode} onChange={(e) => setLoginCode(e.target.value)} placeholder="Access Code / Passcode" className="w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 outline-none focus:border-orange-500 font-bold" />
-              {loginError && <p className="text-rose-500 text-xs font-black uppercase text-center">{loginError}</p>}
-              <button type="submit" className="w-full bg-orange-600 text-white py-6 rounded-3xl text-sm font-black uppercase tracking-widest hover:brightness-110 shadow-xl transition-all">
-                Synchronize Neural Path
-              </button>
-           </form>
-        </div>
-      </div>
-    );
-  }
+  if (!session) return null;
 
   return (
     <div className="flex h-screen overflow-hidden text-slate-300 relative transition-all duration-500">
@@ -1098,7 +1009,7 @@ ${componentLogic}
                       <div className="h-20 w-20 bg-orange-600 rounded-full flex items-center justify-center text-white text-3xl font-black">{session.name.charAt(0)}</div>
                       <div className="space-y-1">
                         <div className="text-2xl font-black text-slate-900 uppercase">{session.name}</div>
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Access Code: {session.code} • Active since {new Date(session.loginTime).toLocaleTimeString()}</div>
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active since {new Date(session.loginTime).toLocaleTimeString()}</div>
                       </div>
                     </div>
                   </div>
@@ -1195,17 +1106,17 @@ ${componentLogic}
                     <div className="space-y-8">
                        <div className="flex justify-between items-center px-2">
                          <h3 className="text-[13px] font-black text-master-green uppercase tracking-widest">Master Protocols</h3>
-                         {!(session?.code === 'dpss' || session?.code === 'gratitude') && (
+                         {false && (
                            <div className="flex items-center gap-2 text-rose-500 animate-pulse">
                              <i className="fa-solid fa-lock text-[10px]"></i>
                              <span className="text-[10px] font-black uppercase tracking-widest">Restricted Access</span>
                            </div>
                          )}
-                         {(session?.code === 'dpss' || session?.code === 'gratitude') && (
+                         {true && (
                            <button onClick={addProtocol} className="text-[11px] font-black text-master-green uppercase border-b-2 border-master-green">+ New Protocol</button>
                          )}
                        </div>
-                       {(session?.code === 'dpss' || session?.code === 'gratitude') ? (
+                       {true ? (
                          <>
                            <div className="flex bg-slate-100/50 p-1.5 rounded-[24px] gap-1 overflow-x-auto no-scrollbar shadow-sm border border-slate-100 self-start">
                              {['General', 'Grammar', 'Vocabulary', 'Reading'].map(cat => (

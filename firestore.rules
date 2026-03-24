@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(email) {
+      return isAuthenticated() && (request.auth.token.email == email || request.auth.uid != null);
+    }
+
+    // Domain Validators
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'name', 'registeredAt', 'lastLogin', 'status']) &&
+             data.email is string && data.name is string &&
+             data.registeredAt is number && data.lastLogin is number &&
+             data.status in ['active', 'inactive'];
+    }
+
+    // Allowed Users Collection
+    match /allowed_users/{email} {
+      // Allow read/write for anyone with a valid access code (we'll use anonymous auth)
+      allow read, write: if isAuthenticated();
+    }
+
+    // User Settings Collection
+    match /user_settings/{email} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Generated Tests Collection
+    match /generatedTests/{testId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}
